@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { publicAssetUrl } from "@/lib/publish";
-import logoFold from "@/assets/logo-fold.png";
+import logoFold from "@/assets/logo-handprint.png";
 
 interface ZineAsset {
   id: string;
