@@ -34,6 +34,16 @@ export interface ZinePage {
   photoFilter?: string;
   /** 0..0.25 — fraction of page used as padding around content */
   spacing?: number;
+  /** ----- editor overrides ----- */
+  photoFit?: "cover" | "contain";
+  /** 0..100 — percent positioning of the photo within its frame */
+  photoPosX?: number;
+  photoPosY?: number;
+  textAlign?: "left" | "center" | "right";
+  /** multiplier on default text size, 0.6 – 1.8 */
+  textSize?: number;
+  /** override of the global textShape for this block */
+  textShape?: string;
 }
 
 export interface ZineDoc {

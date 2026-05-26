@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { ZineDoc, ZinePage } from "./zine";
 
 export type PhotoFile = { id: string; name: string; url: string; size: number };
 export type VideoFile = { id: string; name: string; url: string; size: number; duration?: number; page?: number };
@@ -72,6 +73,7 @@ interface State {
   textShape: TextShape;
   vibe: Vibe;
   generated: boolean;
+  editedDoc: ZineDoc | null;
   setStep: (s: Step) => void;
   toggleTheme: () => void;
   setTheme: (t: "light" | "dark") => void;
@@ -99,6 +101,11 @@ interface State {
   setTextShape: (s: TextShape) => void;
   setVibe: (v: Vibe) => void;
   setGenerated: (g: boolean) => void;
+  setEditedDoc: (d: ZineDoc | null) => void;
+  updatePage: (i: number, patch: Partial<ZinePage>) => void;
+  addPage: () => void;
+  deletePage: (i: number) => void;
+  movePage: (from: number, to: number) => void;
   reset: () => void;
 }
 
@@ -120,7 +127,12 @@ export const useZine = create<State>((set) => ({
   textShape: "normal",
   vibe: "grain",
   generated: false,
-  setStep: (step) => set({ step }),
+  editedDoc: null,
+  setStep: (step) => set((s) => {
+    // Going back to inputs/format invalidates the snapshot.
+    if (step === 1 || step === 2) return { step, editedDoc: null };
+    return { step };
+  }),
   toggleTheme: () =>
     set((s) => {
       const next = s.theme === "light" ? "dark" : "light";
@@ -149,17 +161,57 @@ export const useZine = create<State>((set) => ({
   setFormat: (format) =>
     set(() => {
       const cfg = pageCountConfig(format);
-      return { format, pageCount: cfg.default, pageSpacings: null };
+      return { format, pageCount: cfg.default, pageSpacings: null, editedDoc: null };
     }),
   setIGRatio: (igRatio) => set({ igRatio }),
-  setPageCount: (pageCount) => set({ pageCount, pageSpacings: null }),
-  setSpacingMode: (spacingMode) => set({ spacingMode, pageSpacings: null }),
-  setPageSpacings: (pageSpacings) => set({ pageSpacings }),
+  setPageCount: (pageCount) => set({ pageCount, pageSpacings: null, editedDoc: null }),
+  setSpacingMode: (spacingMode) => set({ spacingMode, pageSpacings: null, editedDoc: null }),
+  setPageSpacings: (pageSpacings) => set({ pageSpacings, editedDoc: null }),
   setHeaderFont: (headerFont) => set({ headerFont }),
   setBodyFont: (bodyFont) => set({ bodyFont }),
   setTextShape: (textShape) => set({ textShape }),
-  setVibe: (vibe) => set({ vibe }),
+  setVibe: (vibe) => set({ vibe, editedDoc: null }),
   setGenerated: (generated) => set({ generated }),
+  setEditedDoc: (editedDoc) => set({ editedDoc }),
+  updatePage: (i, patch) => set((s) => {
+    if (!s.editedDoc) return {};
+    return {
+      editedDoc: {
+        ...s.editedDoc,
+        pages: s.editedDoc.pages.map((p, idx) => (idx === i ? { ...p, ...patch } : p)),
+      },
+    };
+  }),
+  addPage: () => set((s) => {
+    if (!s.editedDoc) return {};
+    const pages = [...s.editedDoc.pages];
+    const backIdx = pages.findIndex((p) => p.kind === "back");
+    const insertAt = backIdx >= 0 ? backIdx : pages.length;
+    const newPage: ZinePage = {
+      index: insertAt,
+      label: `p.${insertAt + 1}`,
+      layout: "empty",
+      kind: "content",
+      bgToken: "paper",
+      spacing: 0.1,
+    };
+    pages.splice(insertAt, 0, newPage);
+    return { editedDoc: { ...s.editedDoc, pages, totalPages: pages.length } };
+  }),
+  deletePage: (i) => set((s) => {
+    if (!s.editedDoc) return {};
+    if (s.editedDoc.pages.length <= 1) return {};
+    const pages = s.editedDoc.pages.filter((_, idx) => idx !== i);
+    return { editedDoc: { ...s.editedDoc, pages, totalPages: pages.length } };
+  }),
+  movePage: (from, to) => set((s) => {
+    if (!s.editedDoc) return {};
+    const pages = [...s.editedDoc.pages];
+    if (from < 0 || from >= pages.length || to < 0 || to >= pages.length) return {};
+    const [m] = pages.splice(from, 1);
+    pages.splice(to, 0, m);
+    return { editedDoc: { ...s.editedDoc, pages } };
+  }),
   reset: () =>
     set({
       step: 1,
@@ -169,5 +221,6 @@ export const useZine = create<State>((set) => ({
       words: "",
       generated: false,
       pageSpacings: null,
+      editedDoc: null,
     }),
 }));
