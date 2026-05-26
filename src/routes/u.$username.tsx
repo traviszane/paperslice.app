@@ -27,19 +27,31 @@ async function loadProfile(username: string): Promise<ProfileWithZines> {
     .maybeSingle();
   if (!profile) throw notFound();
 
-  const { data: zines } = await supabase
+  const { data: zineRows } = await supabase
     .from("zines")
     .select("id, title, slug, cover_path, view_count, published_at, vibe")
     .eq("user_id", profile.id)
     .eq("published", true)
     .order("published_at", { ascending: false });
 
+  const zines = (zineRows ?? [])
+    .filter((z): z is typeof z & { slug: string } => !!z.slug)
+    .map((z) => ({
+      id: z.id,
+      title: z.title,
+      slug: z.slug,
+      cover_path: z.cover_path,
+      view_count: z.view_count,
+      published_at: z.published_at,
+      vibe: z.vibe as string,
+    }));
+
   return {
     username: profile.username,
     display_name: profile.display_name,
     bio: profile.bio,
     tier: profile.tier,
-    zines: zines || [],
+    zines,
   };
 }
 

@@ -189,10 +189,10 @@ export async function publishZine(
     await supabase.from("zines").update({ cover_path: coverPath }).eq("id", zineId);
   }
 
-  const viewUrl = `${window.location.origin}/zines/${zine.slug}`;
+  const viewUrl = `${window.location.origin}/zines/${zine.slug ?? slug}`;
   const embedCode = `<iframe src="${viewUrl}?embed=1" width="100%" height="640" frameborder="0" allow="autoplay" style="border:1px solid #e6ddd0;background:#f0e8dc"></iframe>`;
 
-  return { slug: zine.slug, viewUrl, embedCode };
+  return { slug: zine.slug ?? slug, viewUrl, embedCode };
 }
 
 export async function totalUserStorageBytes(userId: string): Promise<number> {

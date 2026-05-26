@@ -142,6 +142,8 @@ export function ExportStep() {
           ← Back to preview
         </button>
       </aside>
+
+      <PublishDialog open={showPublish} onClose={() => setShowPublish(false)} />
     </div>
   );
 }

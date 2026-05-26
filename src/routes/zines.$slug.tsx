@@ -42,9 +42,9 @@ async function loadZine(slug: string): Promise<ZineRow> {
     .eq("slug", slug)
     .eq("published", true)
     .maybeSingle();
-  if (error || !zine) throw notFound();
+  if (error || !zine || !zine.slug) throw notFound();
 
-  const [{ data: assets }, { data: profile }] = await Promise.all([
+  const [{ data: assetRows }, { data: profile }] = await Promise.all([
     supabase
       .from("assets")
       .select("id, kind, name, storage_path, page, position, duration_sec, text_content")
@@ -57,7 +57,23 @@ async function loadZine(slug: string): Promise<ZineRow> {
       .maybeSingle(),
   ]);
 
-  return { ...zine, assets: (assets as ZineAsset[]) || [], profile: profile ?? null };
+  const assets: ZineAsset[] = (assetRows ?? []).map((a) => ({
+    id: a.id,
+    kind: a.kind as ZineAsset["kind"],
+    name: a.name,
+    storage_path: a.storage_path,
+    page: a.page,
+    position: a.position,
+    duration_sec: a.duration_sec,
+    text_content: a.text_content,
+  }));
+
+  return {
+    ...zine,
+    slug: zine.slug,
+    assets,
+    profile: profile ?? null,
+  };
 }
 
 export const Route = createFileRoute("/zines/$slug")({
