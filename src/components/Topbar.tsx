@@ -1,7 +1,7 @@
 import { useZine, type Step } from "@/lib/store";
 import { Moon, Sun, LogOut } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import logoFold from "@/assets/logo-wordmark.png";
+import logoFold from "@/assets/logo-colorful.png";
 import { useAuth, TIER_LABEL } from "@/hooks/use-auth";
 
 const STEPS: { n: Step; label: string }[] = [
@@ -55,6 +55,8 @@ export function Topbar() {
             {STEPS.map((s, i) => {
               const active = step === s.n;
               const done = step > s.n;
+              const stepColors = ["var(--sky)", "var(--sage)", "var(--blush)", "var(--butter)"];
+              const dotColor = stepColors[i];
               return (
                 <button
                   key={s.n}
@@ -68,6 +70,10 @@ export function Topbar() {
                   } ${i > 0 ? "border-l border-rule" : ""}`}
                   aria-current={active ? "step" : undefined}
                 >
+                  <span
+                    className="inline-block h-1.5 w-1.5 rounded-full"
+                    style={{ background: active ? "var(--cotton)" : dotColor }}
+                  />
                   <span className="opacity-70">{s.n}</span>
                   <span>·</span>
                   <span>{s.label}</span>
