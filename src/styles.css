@@ -2,7 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Serif+Display&family=Abril+Fatface&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Space+Mono:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&family=Karla:wght@300;400;600&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Serif+Display&family=Abril+Fatface&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Space+Mono:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&family=Karla:wght@300;400;600&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -37,38 +37,42 @@
   --color-ink-mid: var(--ink-mid);
   --color-ink-light: var(--ink-light);
   --color-rule: var(--rule);
-  --font-display: 'Playfair Display', serif;
-  --font-mono: 'IBM Plex Mono', monospace;
-  --font-serif: 'Libre Baskerville', serif;
+  --font-display: 'Instrument Serif', serif;
+  --font-mono: 'Work Sans', sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-body: 'Work Sans', sans-serif;
 }
 
 :root {
   --radius: 0.25rem;
-  --paper: oklch(0.953 0.018 80);
-  --paper-warm: oklch(0.93 0.022 75);
-  --paper-deep: oklch(0.90 0.025 72);
-  --ink: oklch(0.18 0.012 50);
-  --ink-mid: oklch(0.45 0.012 50);
-  --ink-light: oklch(0.68 0.015 60);
-  --rule: oklch(0.85 0.015 70);
-  --accent-red: oklch(0.56 0.18 28);
+  /* Entireworld-inspired warm, lived-in palette */
+  --paper: oklch(0.918 0.022 82);        /* #F0E8DC warm oat */
+  --paper-warm: oklch(0.886 0.020 80);   /* #E6DDD0 secondary surface */
+  --paper-deep: oklch(0.855 0.022 78);
+  --cotton: oklch(0.965 0.013 84);       /* #FAF6F0 undyed cotton */
+  --ink: oklch(0.20 0.008 50);           /* #1E1A16 warm near-black */
+  --ink-mid: oklch(0.46 0.012 45);
+  --ink-light: oklch(0.66 0.014 55);
+  --rule: oklch(0.82 0.018 75);
+  --accent-red: oklch(0.575 0.125 38);   /* #B85C4A muted terracotta */
+  --accent-red-soft: oklch(0.70 0.08 38);
 
   --background: var(--paper);
   --foreground: var(--ink);
-  --card: oklch(0.98 0.012 80);
+  --card: var(--cotton);
   --card-foreground: var(--ink);
-  --popover: oklch(0.98 0.012 80);
+  --popover: var(--cotton);
   --popover-foreground: var(--ink);
   --primary: var(--ink);
-  --primary-foreground: var(--paper);
+  --primary-foreground: var(--cotton);
   --secondary: var(--paper-warm);
   --secondary-foreground: var(--ink);
   --muted: var(--paper-warm);
   --muted-foreground: var(--ink-mid);
   --accent: var(--accent-red);
-  --accent-foreground: oklch(0.98 0.012 80);
-  --destructive: oklch(0.55 0.22 28);
-  --destructive-foreground: oklch(0.98 0.012 80);
+  --accent-foreground: var(--cotton);
+  --destructive: oklch(0.52 0.16 32);
+  --destructive-foreground: var(--cotton);
   --border: var(--rule);
   --input: var(--rule);
   --ring: var(--ink-mid);
@@ -107,10 +111,11 @@
   * { border-color: var(--color-border); }
   html, body { background: var(--paper); color: var(--ink); }
   body {
-    font-family: var(--font-mono);
-    font-weight: 300;
+    font-family: var(--font-body);
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
   }
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
 }
 
 /* PAPER GRAIN OVERLAY — subtle SVG noise applied app-wide */
