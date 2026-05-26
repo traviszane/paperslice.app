@@ -103,24 +103,8 @@ export function UploadStep() {
     );
   };
 
-  const handleAudios = (files: File[]) => {
-    const valid: File[] = [];
-    for (const f of files) {
-      if (!/audio\/(mpeg|mp3|wav|x-wav)/.test(f.type)) {
-        toast.warning(`Skipped ${f.name} — mp3/wav only`);
-        continue;
-      }
-      if (f.size > MAX_AUDIO_BYTES) {
-        toast.error(`${f.name} exceeds 10MB`);
-        continue;
-      }
-      valid.push(f);
-    }
-    const remaining = 3 - audios.length;
-    addAudios(
-      valid.slice(0, remaining).map((f) => ({ id: uid(), name: f.name, url: URL.createObjectURL(f), size: f.size }))
-    );
-  };
+
+
 
   const handleWordsFile = (files: File[]) => {
     const f = files[0];
