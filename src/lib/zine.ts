@@ -69,9 +69,9 @@ function defaultPageCountFor(format: Format): number {
 }
 
 const SPACING_VALUE: Record<string, number> = {
-  tight: 0.035,
-  balanced: 0.10,
-  full: 0.18,
+  tight: 0.015,
+  balanced: 0.05,
+  full: 0.09,
 };
 
 function splitParagraphs(words: string): string[] {

@@ -171,10 +171,14 @@ export function FormatStep() {
               <div className="label-xs">Photo spacing</div>
               <button
                 onClick={randomizeSpacing}
-                className="flex items-center gap-1.5 border border-rule bg-card px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-mid hover:bg-paper-warm"
+                className={`flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] transition ${
+                  pageSpacings
+                    ? "border-[color:var(--accent-red)] bg-[color:var(--accent-red)] text-[color:var(--cotton)]"
+                    : "border-rule bg-card text-ink-mid hover:bg-paper-warm"
+                }`}
                 title="Randomize spacing per page"
               >
-                <Shuffle size={11} /> randomize spacing
+                <Shuffle size={11} /> {pageSpacings ? "randomized ✓" : "randomize"}
               </button>
             </div>
             <div className="border border-rule bg-card px-4 py-4">
@@ -188,7 +192,8 @@ export function FormatStep() {
                   const v = Number(e.target.value);
                   setSpacingMode(v === 0 ? "tight" : v === 1 ? "balanced" : "full");
                 }}
-                className="w-full accent-[color:var(--accent-red)]"
+                disabled={!!pageSpacings}
+                className="w-full accent-[color:var(--accent-red)] disabled:opacity-40"
               />
               <div className="mt-2 flex justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-ink-light">
                 <span className={spacingMode === "tight" ? "text-ink" : ""}>Tight</span>
