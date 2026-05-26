@@ -35,6 +35,14 @@ export function FormatStep() {
     setFormat,
     igRatio,
     setIGRatio,
+    pageCount,
+    setPageCount,
+    spacingMode,
+    setSpacingMode,
+    pageSpacings,
+    setPageSpacings,
+    photos,
+    words,
     headerFont,
     bodyFont,
     setHeaderFont,
@@ -45,6 +53,27 @@ export function FormatStep() {
     setVibe,
     setStep,
   } = useZine();
+
+  const cfg = pageCountConfig(format);
+  const textBlocks = words.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).length;
+
+  const stepPages = (dir: 1 | -1) => {
+    const next = pageCount + dir * cfg.step;
+    if (next < cfg.min || next > cfg.max) return;
+    setPageCount(next);
+  };
+
+  const randomizeSpacing = () => {
+    // Range bounded by selected mode
+    const ranges: Record<SpacingMode, [number, number]> = {
+      tight: [0.02, 0.10],
+      balanced: [0.05, 0.16],
+      full: [0.04, 0.22],
+    };
+    const [lo, hi] = ranges[spacingMode];
+    const arr = Array.from({ length: pageCount }, () => +(lo + Math.random() * (hi - lo)).toFixed(3));
+    setPageSpacings(arr);
+  };
 
   return (
     <div className="grid gap-0 md:grid-cols-[1fr_360px] min-h-[calc(100vh-130px)]">
