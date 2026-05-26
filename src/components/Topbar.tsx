@@ -1,7 +1,7 @@
 import { useZine, type Step } from "@/lib/store";
 import { Moon, Sun, LogOut } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import logoFold from "@/assets/logo-paperslice.png";
+import logoFold from "@/assets/logo-paperslice-color.png";
 import { useAuth, TIER_LABEL } from "@/hooks/use-auth";
 
 const STEPS: { n: Step; label: string }[] = [
@@ -63,7 +63,7 @@ export function Topbar() {
                   onClick={() => setStep(s.n)}
                   className={`group flex items-center gap-1.5 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.15em] transition ${
                     active
-                      ? "bg-ink text-[color:var(--paper)]"
+                      ? "bg-[color:var(--clay)] text-[color:var(--cotton)]"
                       : done
                       ? "text-[color:var(--accent-red)] hover:bg-paper-deep"
                       : "text-ink-light hover:bg-paper-deep"
@@ -134,7 +134,7 @@ export function Topbar() {
               key={s.n}
               onClick={() => setStep(s.n)}
               className={`flex-1 rounded-full px-2 py-1.5 font-mono text-[9px] uppercase tracking-[0.12em] ${
-                active ? "bg-ink text-[color:var(--paper)]" : "text-ink-light"
+                active ? "bg-[color:var(--clay)] text-[color:var(--cotton)]" : "text-ink-light"
               }`}
             >
               {s.n}·{s.label}
@@ -148,38 +148,70 @@ export function Topbar() {
 
 export function PublishBanner() {
   const { user, profile } = useAuth();
-  if (user && profile) {
-    return (
-      <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--paper)]">
-        <div className="mx-auto flex max-w-[1180px] items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
-          <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--accent-red)] sm:inline-block" />
-          <span className="text-[color:var(--paper)]/80">
-            Signed in as @{profile.username} · {TIER_LABEL[profile.tier]} tier
-          </span>
-          <Link
-            to="/u/$username"
-            params={{ username: profile.username }}
-            className="font-medium uppercase tracking-[0.12em] text-[color:var(--accent-red)] hover:underline"
-          >
-            view your profile →
-          </Link>
-        </div>
-      </div>
-    );
-  }
+
+  // Torn-paper collage strip — overlapping brand-color swatches behind the message
+  const swatches = [
+    { c: "var(--butter)",   left: "0%",   w: "22%", rot: "-1.2deg", top: "-18%" },
+    { c: "var(--sky)",      left: "16%",  w: "24%", rot: "0.8deg",  top: "12%"  },
+    { c: "var(--blush)",    left: "36%",  w: "22%", rot: "-0.6deg", top: "-12%" },
+    { c: "var(--sage)",     left: "54%",  w: "22%", rot: "1.1deg",  top: "10%"  },
+    { c: "var(--lavender)", left: "72%",  w: "20%", rot: "-0.9deg", top: "-14%" },
+    { c: "var(--clay)",     left: "84%",  w: "20%", rot: "0.6deg",  top: "8%"   },
+  ];
+
+  const message = user && profile ? (
+    <>
+      <span className="text-ink/75">
+        Signed in as <span className="font-medium text-ink">@{profile.username}</span> · {TIER_LABEL[profile.tier]} tier
+      </span>
+      <Link
+        to="/u/$username"
+        params={{ username: profile.username }}
+        className="font-medium uppercase tracking-[0.12em] text-[color:var(--clay)] hover:underline"
+      >
+        view your profile →
+      </Link>
+    </>
+  ) : (
+    <>
+      <span className="text-ink/75">
+        Sign in to publish your zine — get a public link + embed code
+      </span>
+      <Link
+        to="/auth"
+        className="font-medium uppercase tracking-[0.12em] text-[color:var(--clay)] hover:underline"
+      >
+        create a free account →
+      </Link>
+    </>
+  );
+
   return (
-    <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--paper)]">
-      <div className="mx-auto flex max-w-[1180px] items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
-        <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--accent-red)] sm:inline-block" />
-        <span className="text-[color:var(--paper)]/80">
-          Sign in to publish your zine — get a public link + embed code
-        </span>
-        <Link
-          to="/auth"
-          className="font-medium uppercase tracking-[0.12em] text-[color:var(--accent-red)] hover:underline"
-        >
-          create a free account →
-        </Link>
+    <div className="relative overflow-hidden border-b border-rule bg-paper-warm">
+      {/* paper-swatch collage layer */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        {swatches.map((s, i) => (
+          <span
+            key={i}
+            className="absolute h-[180%] rounded-[2px]"
+            style={{
+              left: s.left,
+              top: s.top,
+              width: s.w,
+              transform: `rotate(${s.rot})`,
+              background: `color-mix(in oklab, ${s.c} 70%, var(--cotton))`,
+              boxShadow: "0 1px 0 oklch(0 0 0 / 0.04)",
+              mixBlendMode: "multiply",
+            }}
+          />
+        ))}
+        {/* subtle paper wash on top so text stays legible */}
+        <span className="absolute inset-0" style={{ background: "color-mix(in oklab, var(--cotton) 35%, transparent)" }} />
+      </div>
+
+      <div className="relative mx-auto flex max-w-[1180px] flex-wrap items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
+        <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--clay)] sm:inline-block" />
+        {message}
       </div>
     </div>
   );
