@@ -346,7 +346,7 @@ export function UploadStep() {
           <div className="label-xs">Tips</div>
           <p className="font-serif text-[12px] italic leading-[1.7] text-ink-mid">
             A zine is a love letter to a moment. Don't overthink it — pick the photos that hum, write what you'd
-            scribble on a napkin, leave room for grain.
+            scribble on a napkin, drop in anything that makes you smile. ☺︎
           </p>
         </div>
 
