@@ -19,7 +19,7 @@ export const Route = createFileRoute("/$")({
         <p className="mt-2 font-serif italic text-ink-mid">That page doesn't exist.</p>
         <Link
           to="/"
-          className="mt-6 inline-block border border-ink px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-ink hover:text-[color:var(--cotton)]"
+          className="mt-6 inline-block border border-ink px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-ink hover:text-[color:var(--paper)]"
         >
           ← back to paperslice
         </Link>

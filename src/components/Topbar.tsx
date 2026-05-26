@@ -63,7 +63,7 @@ export function Topbar() {
                   onClick={() => setStep(s.n)}
                   className={`group flex items-center gap-1.5 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.15em] transition ${
                     active
-                      ? "bg-ink text-[color:var(--cotton)]"
+                      ? "bg-ink text-[color:var(--paper)]"
                       : done
                       ? "text-[color:var(--accent-red)] hover:bg-paper-deep"
                       : "text-ink-light hover:bg-paper-deep"
@@ -134,7 +134,7 @@ export function Topbar() {
               key={s.n}
               onClick={() => setStep(s.n)}
               className={`flex-1 rounded-full px-2 py-1.5 font-mono text-[9px] uppercase tracking-[0.12em] ${
-                active ? "bg-ink text-[color:var(--cotton)]" : "text-ink-light"
+                active ? "bg-ink text-[color:var(--paper)]" : "text-ink-light"
               }`}
             >
               {s.n}·{s.label}
@@ -150,10 +150,10 @@ export function PublishBanner() {
   const { user, profile } = useAuth();
   if (user && profile) {
     return (
-      <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--cotton)]">
+      <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--paper)]">
         <div className="mx-auto flex max-w-[1180px] items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
           <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--accent-red)] sm:inline-block" />
-          <span className="text-[color:var(--cotton)]/80">
+          <span className="text-[color:var(--paper)]/80">
             Signed in as @{profile.username} · {TIER_LABEL[profile.tier]} tier
           </span>
           <Link
@@ -168,10 +168,10 @@ export function PublishBanner() {
     );
   }
   return (
-    <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--cotton)]">
+    <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--paper)]">
       <div className="mx-auto flex max-w-[1180px] items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
         <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--accent-red)] sm:inline-block" />
-        <span className="text-[color:var(--cotton)]/80">
+        <span className="text-[color:var(--paper)]/80">
           Sign in to publish your zine — get a public link + embed code
         </span>
         <Link

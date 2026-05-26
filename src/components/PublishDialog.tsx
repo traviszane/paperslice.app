@@ -40,7 +40,7 @@ export function PublishDialog({ open, onClose }: { open: boolean; onClose: () =>
         <div className="mt-6 flex gap-2">
           <Link
             to="/auth"
-            className="flex-1 bg-ink py-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--cotton)] hover:bg-[color:var(--accent-red)]"
+            className="flex-1 bg-ink py-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--paper)] hover:bg-[color:var(--accent-red)]"
           >
             Sign in / sign up
           </Link>
@@ -162,7 +162,7 @@ export function PublishDialog({ open, onClose }: { open: boolean; onClose: () =>
             href={result.viewUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 bg-ink py-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--cotton)] hover:bg-[color:var(--accent-red)]"
+            className="flex-1 bg-ink py-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--paper)] hover:bg-[color:var(--accent-red)]"
           >
             View zine →
           </a>
@@ -244,7 +244,7 @@ export function PublishDialog({ open, onClose }: { open: boolean; onClose: () =>
         <button
           onClick={handlePublish}
           disabled={busy || wouldExceed}
-          className="flex-1 bg-ink py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--cotton)] hover:bg-[color:var(--accent-red)] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 bg-ink py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--paper)] hover:bg-[color:var(--accent-red)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy ? "Publishing…" : "Publish"}
         </button>
