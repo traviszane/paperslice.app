@@ -32,6 +32,8 @@ export interface ZinePage {
   rotate?: number;
   frameColor?: string;
   photoFilter?: string;
+  /** 0..0.25 — fraction of page used as padding around content */
+  spacing?: number;
 }
 
 export interface ZineDoc {
@@ -40,20 +42,27 @@ export interface ZineDoc {
   totalPages: number;
 }
 
-function pageCountFor(format: Format): number {
+function defaultPageCountFor(format: Format): number {
   switch (format) {
     case "single-sheet":
-    case "printable-zine":
       return 8;
+    case "printable-zine":
+      return 16;
     case "two-page":
       return 2;
     case "instagram":
-      return 12;
+      return 10;
     case "ebook":
     default:
       return 12;
   }
 }
+
+const SPACING_VALUE: Record<string, number> = {
+  tight: 0.035,
+  balanced: 0.10,
+  full: 0.18,
+};
 
 function splitParagraphs(words: string): string[] {
   return words.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
