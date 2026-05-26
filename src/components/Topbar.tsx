@@ -1,7 +1,7 @@
 import { useZine, type Step } from "@/lib/store";
 import { Moon, Sun, LogOut } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import logoFold from "@/assets/logo-handprint.png";
+import logoFold from "@/assets/logo-wordmark.png";
 import { useAuth, TIER_LABEL } from "@/hooks/use-auth";
 
 const STEPS: { n: Step; label: string }[] = [
@@ -30,11 +30,25 @@ export function Topbar() {
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-6 px-6 py-4 md:px-10">
         <button
           onClick={() => setStep(1)}
-          className="flex items-center leading-none"
+          className="flex items-center leading-none shrink-0"
           aria-label="Paperslice home"
         >
-          <img src={logoFold} alt="paperslice" width={210} height={56} className="h-9 w-auto md:h-10" />
+          <img
+            src={logoFold}
+            alt="paperslice"
+            width={1536}
+            height={1024}
+            className="h-16 w-auto md:h-20 -my-3 object-contain"
+            style={{ maxWidth: "240px" }}
+          />
         </button>
+
+        {/* Brand color confetti */}
+        <div className="hidden items-center gap-1 lg:flex" aria-hidden>
+          {["var(--clay)","var(--sage)","var(--sky)","var(--blush)","var(--lavender)","var(--butter)"].map((c)=>(
+            <span key={c} className="h-2.5 w-2.5 rounded-full" style={{background:`color-mix(in oklab, ${c} 92%, transparent)`}} />
+          ))}
+        </div>
 
         <nav className="hidden items-center gap-1 md:flex">
           <div className="flex items-center overflow-hidden rounded-full border border-rule bg-paper-warm">
@@ -64,7 +78,7 @@ export function Topbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="hidden font-mono text-[10px] tracking-[0.05em] text-ink-light md:block">
+          <div className="hidden font-mono text-[10px] tracking-[0.05em] text-ink-light xl:block">
             {counts || "0 files"}
           </div>
           <button

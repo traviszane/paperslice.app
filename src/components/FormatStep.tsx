@@ -25,6 +25,7 @@ const VIBES: { id: Vibe; label: string }[] = [
   { id: "collage", label: "Raw Collage" },
   { id: "typewriter", label: "Typewriter" },
   { id: "minimal", label: "Minimal" },
+  { id: "colorful", label: "Colorful" },
 ];
 
 export function FormatStep() {

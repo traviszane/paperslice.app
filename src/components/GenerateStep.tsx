@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useZine } from "@/lib/store";
-import { buildZine, type ZineDoc, type ZinePage } from "@/lib/zine";
+import { buildZine, type ZineDoc } from "@/lib/zine";
 import { ChevronLeft, ChevronRight, Play, Pause, Volume2 } from "lucide-react";
 
 const MESSAGES = [
@@ -39,12 +39,13 @@ export function GenerateStep() {
       buildZine({
         title: state.title,
         format: state.format,
+        vibe: state.vibe,
         photos: state.photos,
         videos: state.videos,
         audios: state.audios,
         words: state.words,
       }),
-    [state.title, state.format, state.photos, state.videos, state.audios, state.words]
+    [state.title, state.format, state.vibe, state.photos, state.videos, state.audios, state.words]
   );
 
   if (loading) {
@@ -206,6 +207,130 @@ function Preview({ doc, onExport }: { doc: ZineDoc; onExport: () => void }) {
   );
 }
 
+/* ===== Artful headline that respects textShape ===== */
+function ArtfulHeading({
+  text,
+  shape,
+  font,
+  size = 26,
+  color = "var(--ink)",
+  italic = false,
+  weight = 700,
+}: {
+  text: string;
+  shape: string;
+  font: string;
+  size?: number;
+  color?: string;
+  italic?: boolean;
+  weight?: number;
+}) {
+  const baseStyle: React.CSSProperties = {
+    fontFamily: font,
+    fontStyle: italic ? "italic" : "normal",
+    fontWeight: weight,
+    color,
+    lineHeight: 1.0,
+  };
+
+  if (shape === "wavy") {
+    // Render each character on a sine wave
+    const chars = text.split("");
+    return (
+      <h3 className="flex flex-wrap" style={{ ...baseStyle, fontSize: size, gap: "0.04em" }}>
+        {chars.map((c, i) => (
+          <span
+            key={i}
+            style={{
+              display: "inline-block",
+              transform: `translateY(${Math.sin(i * 0.7) * (size * 0.18)}px) rotate(${Math.sin(i * 0.7) * 6}deg)`,
+            }}
+          >
+            {c === " " ? "\u00A0" : c}
+          </span>
+        ))}
+      </h3>
+    );
+  }
+
+  if (shape === "arc" || shape === "circle") {
+    // SVG textPath along an arc/circle
+    const width = 320;
+    const height = shape === "circle" ? 200 : 110;
+    const pathD =
+      shape === "circle"
+        ? `M ${width / 2 - 80},${height / 2} a 80,80 0 1,1 160,0 a 80,80 0 1,1 -160,0`
+        : `M 10,${height - 10} Q ${width / 2},10 ${width - 10},${height - 10}`;
+    return (
+      <svg viewBox={`0 0 ${width} ${height}`} width="100%" style={{ overflow: "visible" }}>
+        <defs>
+          <path id={`arc-${text.length}-${shape}`} d={pathD} fill="none" />
+        </defs>
+        <text fill={color} style={{ ...baseStyle, fontSize: size * 0.75 }}>
+          <textPath href={`#arc-${text.length}-${shape}`} startOffset="50%" textAnchor="middle">
+            {text}
+          </textPath>
+        </text>
+      </svg>
+    );
+  }
+
+  if (shape === "stacked") {
+    return (
+      <h3 className="flex flex-col" style={{ ...baseStyle, fontSize: size, lineHeight: 0.85 }}>
+        {text.split(/\s+/).slice(0, 5).map((w, i) => (
+          <span key={i} style={{ marginLeft: i % 2 ? "0.3em" : 0 }}>{w}</span>
+        ))}
+      </h3>
+    );
+  }
+
+  if (shape === "scattered") {
+    const words = text.split(/\s+/);
+    return (
+      <h3 style={{ ...baseStyle, fontSize: size }} className="flex flex-wrap gap-x-1.5">
+        {words.map((w, i) => (
+          <span
+            key={i}
+            style={{
+              display: "inline-block",
+              transform: `rotate(${[-4, 3, -2, 5, -3][i % 5]}deg) translateY(${[0, -2, 3, -1, 2][i % 5]}px)`,
+            }}
+          >
+            {w}
+          </span>
+        ))}
+      </h3>
+    );
+  }
+
+  if (shape === "diagonal") {
+    return <h3 style={{ ...baseStyle, fontSize: size, transform: "rotate(-6deg)", transformOrigin: "left bottom" }}>{text}</h3>;
+  }
+
+  if (shape === "outlined") {
+    return (
+      <h3
+        style={{
+          ...baseStyle,
+          fontSize: size,
+          color: "transparent",
+          WebkitTextStroke: `1.2px ${color}`,
+        }}
+      >
+        {text}
+      </h3>
+    );
+  }
+
+  return <h3 style={{ ...baseStyle, fontSize: size }}>{text}</h3>;
+}
+
+function tokenToBg(token?: string): string {
+  if (!token) return "var(--paper)";
+  return `var(--${token})`;
+}
+
 function ZinePageView({
   page,
   headerFont,
@@ -214,110 +339,189 @@ function ZinePageView({
   shape,
   side,
 }: {
-  page: ZinePage;
+  page: import("@/lib/zine").ZinePage;
   headerFont: string;
   bodyFont: string;
   vibe: string;
   shape: string;
   side?: "left" | "right";
 }) {
-  const vibeBg =
-    vibe === "minimal"
-      ? "bg-paper"
-      : vibe === "editorial"
-      ? "bg-[color:var(--paper-warm)]"
-      : vibe === "typewriter"
-      ? "bg-[color:var(--paper)]"
-      : vibe === "collage"
-      ? "bg-paper-deep"
-      : "bg-paper";
+  const bg = tokenToBg(page.bgToken);
+  const isDarkBg = page.bgToken === "clay" || page.bgToken === "ink";
+  const ink = isDarkBg ? "var(--cotton)" : "var(--ink)";
+  const inkMid = isDarkBg ? "color-mix(in oklab, var(--cotton) 80%, transparent)" : "var(--ink-mid)";
 
-  const overlay =
+  const grainOverlay =
     vibe === "grain"
-      ? "after:absolute after:inset-0 after:opacity-40 after:mix-blend-multiply after:bg-[radial-gradient(circle_at_30%_20%,_transparent_0,_rgba(0,0,0,0.06)_100%)]"
-      : vibe === "collage"
-      ? "after:absolute after:inset-2 after:border after:border-dashed after:border-ink/20"
+      ? "after:absolute after:inset-0 after:opacity-30 after:mix-blend-multiply after:pointer-events-none after:[background-image:radial-gradient(circle_at_30%_20%,_transparent_0,_rgba(0,0,0,0.08)_100%)]"
       : "";
 
-  const headingClass =
-    shape === "diagonal"
-      ? "rotate-[-6deg]"
-      : shape === "stacked"
-      ? "flex flex-col leading-[0.85]"
-      : shape === "scattered"
-      ? "rotate-[3deg]"
-      : "";
+  // Render layouts
+  const renderContent = () => {
+    switch (page.layout) {
+      case "cover":
+        return (
+          <div className="absolute inset-0 flex flex-col">
+            {page.photo && (
+              <div className="relative flex-1 overflow-hidden m-4 mb-3">
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+              </div>
+            )}
+            <div className="px-5 pb-5">
+              <ArtfulHeading
+                text={page.heading || "Untitled"}
+                shape={shape}
+                font={headerFont}
+                size={32}
+                color={ink}
+                italic={vibe === "editorial"}
+                weight={vibe === "minimal" ? 400 : 700}
+              />
+              <div className="mt-2 font-mono text-[8px] uppercase tracking-[0.22em]" style={{ color: inkMid }}>
+                a paperslice zine
+              </div>
+            </div>
+          </div>
+        );
 
-  const headingStyle: React.CSSProperties = {
-    fontFamily: headerFont,
-    fontStyle: vibe === "editorial" ? "italic" : "normal",
-    fontWeight: vibe === "minimal" ? 400 : 700,
+      case "back":
+        return (
+          <div className="absolute inset-0 grid place-items-center">
+            <div className="text-center">
+              <div className="font-display text-2xl italic" style={{ color: ink }}>fin.</div>
+              <div className="mt-2 font-mono text-[8px] uppercase tracking-[0.22em]" style={{ color: inkMid }}>
+                paperslice.app
+              </div>
+            </div>
+          </div>
+        );
+
+      case "photo-bleed":
+        return (
+          <>
+            {page.photo && (
+              <img src={page.photo.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            )}
+          </>
+        );
+
+      case "photo-card":
+        return (
+          <div className="absolute inset-0 flex flex-col p-5">
+            {page.photo && (
+              <div className="relative aspect-[4/5] overflow-hidden mb-3 shadow-[0_4px_12px_-6px_rgba(0,0,0,0.25)]">
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+              </div>
+            )}
+            {page.body && (
+              <p
+                className="text-[9.5px] leading-[1.55]"
+                style={{ fontFamily: bodyFont, color: inkMid, fontStyle: vibe === "editorial" ? "italic" : "normal" }}
+              >
+                {page.body.slice(0, 160)}{page.body.length > 160 ? "…" : ""}
+              </p>
+            )}
+          </div>
+        );
+
+      case "photo-polaroid":
+        return (
+          <div className="absolute inset-0 grid place-items-center p-6">
+            <div className="relative rotate-[-3deg] bg-[color:var(--cotton)] p-2 pb-8 shadow-[0_8px_18px_-8px_rgba(0,0,0,0.35)]">
+              <div className="tape absolute -top-2 left-1/2 h-4 w-12 -translate-x-1/2 rotate-[2deg]" />
+              {page.photo && (
+                <div className="aspect-square w-44 overflow-hidden">
+                  <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+                </div>
+              )}
+              <div className="mt-1 text-center font-mono text-[8px] uppercase tracking-[0.18em] text-[color:var(--ink-mid)]">
+                {page.heading || page.label}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "photo-duo":
+        return (
+          <div className="absolute inset-0 grid grid-rows-2 gap-2 p-4">
+            {page.photo && (
+              <div className="relative overflow-hidden">
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+              </div>
+            )}
+            {page.photoB && (
+              <div className="relative overflow-hidden ml-6">
+                <img src={page.photoB.url} alt="" className="h-full w-full object-cover" />
+              </div>
+            )}
+          </div>
+        );
+
+      case "text-only":
+        return (
+          <div className="absolute inset-0 flex flex-col justify-center p-7">
+            {page.heading && (
+              <ArtfulHeading
+                text={page.heading}
+                shape={shape}
+                font={headerFont}
+                size={22}
+                color={ink}
+                italic={vibe === "editorial"}
+                weight={vibe === "minimal" ? 400 : 700}
+              />
+            )}
+            {page.body && (
+              <p
+                className="mt-3 text-[11px] leading-[1.7]"
+                style={{ fontFamily: bodyFont, color: inkMid, fontStyle: vibe === "editorial" ? "italic" : "normal" }}
+              >
+                {page.body.slice(0, 280)}{page.body.length > 280 ? "…" : ""}
+              </p>
+            )}
+          </div>
+        );
+
+      case "text-pullquote":
+        return (
+          <div className="absolute inset-0 flex flex-col justify-center p-7">
+            <div className="mb-2 font-mono text-[8px] uppercase tracking-[0.22em]" style={{ color: inkMid }}>—</div>
+            <p
+              className="font-display text-[18px] italic leading-[1.3]"
+              style={{ color: ink }}
+            >
+              "{(page.body || "").slice(0, 120)}{(page.body || "").length > 120 ? "…" : ""}"
+            </p>
+          </div>
+        );
+
+      case "video":
+        return (
+          <>
+            {page.video && (
+              <video src={page.video.url} className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline />
+            )}
+          </>
+        );
+
+      case "empty":
+      default:
+        return (
+          <div className="absolute inset-0 grid place-items-center">
+            <span className="font-mono text-[8px] uppercase tracking-[0.3em]" style={{ color: inkMid }}>
+              {page.label}
+            </span>
+          </div>
+        );
+    }
   };
-  if (shape === "outlined") {
-    (headingStyle as any).WebkitTextStroke = "1px currentColor";
-    headingStyle.color = "transparent";
-  }
 
   return (
-    <div className={`relative h-full w-full overflow-hidden ${vibeBg} ${overlay}`}>
-      {page.photo && page.kind !== "back" && (
-        <img
-          src={page.photo.url}
-          alt=""
-          className={`absolute inset-0 h-full w-full object-cover ${page.kind === "cover" ? "opacity-80" : "opacity-70"}`}
-          style={{
-            filter: vibe === "grain" ? "contrast(1.05) saturate(0.9)" : vibe === "collage" ? "grayscale(0.4) contrast(1.1)" : "none",
-          }}
-        />
-      )}
-
-      {page.video && (
-        <video src={page.video.url} className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline />
-      )}
-
-      {/* Tape strip on cover for collage vibe */}
-      {vibe === "collage" && page.kind === "cover" && (
-        <div className="tape absolute -top-1 left-1/4 h-5 w-16 rotate-[-4deg]" />
-      )}
-
-      <div className={`absolute inset-0 flex flex-col ${page.kind === "cover" ? "justify-end" : "justify-start"} p-4 ${side === "right" ? "pl-3" : ""}`}>
-        {page.heading && (
-          <h3
-            className={`${headingClass} drop-shadow-[0_1px_0_var(--paper)] ${
-              page.kind === "cover" ? "text-[26px]" : "text-[14px]"
-            } leading-[1.05] text-ink`}
-            style={headingStyle}
-          >
-            {shape === "stacked" && page.heading
-              ? page.heading.split(/\s+/).slice(0, 4).map((w, i) => (
-                  <span key={i}>{w}</span>
-                ))
-              : page.heading}
-          </h3>
-        )}
-        {page.body && page.kind !== "cover" && (
-          <p
-            className={`mt-2 text-[10px] leading-[1.55] text-ink-mid ${
-              shape === "scattered" ? "rotate-[-2deg]" : ""
-            }`}
-            style={{
-              fontFamily: bodyFont,
-              fontStyle: vibe === "editorial" ? "italic" : "normal",
-            }}
-          >
-            {page.body.slice(0, 240)}
-            {page.body.length > 240 ? "…" : ""}
-          </p>
-        )}
-        {page.kind === "cover" && (
-          <div className="mt-2 font-mono text-[8px] uppercase tracking-[0.2em] text-ink-light">a paperslice zine</div>
-        )}
-        {page.kind === "back" && (
-          <div className="m-auto text-center font-mono text-[8px] uppercase tracking-[0.2em] text-ink-light">
-            paperslice.app
-          </div>
-        )}
-      </div>
+    <div
+      className={`relative h-full w-full overflow-hidden ${grainOverlay} ${side === "right" ? "border-l border-rule" : ""}`}
+      style={{ background: bg }}
+    >
+      {renderContent()}
     </div>
   );
 }

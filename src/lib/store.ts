@@ -7,7 +7,7 @@ export type AudioFile = { id: string; name: string; url: string; size: number; p
 export type Format = "single-sheet" | "ebook" | "printable-zine" | "two-page" | "instagram";
 export type IGRatio = "1:1" | "4:5" | "9:16";
 export type TextShape = "normal" | "wavy" | "circle" | "diagonal" | "stacked" | "scattered" | "outlined" | "arc";
-export type Vibe = "grain" | "editorial" | "collage" | "typewriter" | "minimal";
+export type Vibe = "grain" | "editorial" | "collage" | "typewriter" | "minimal" | "colorful";
 export type Step = 1 | 2 | 3 | 4;
 
 export const HEADER_FONTS = [
