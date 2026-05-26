@@ -255,7 +255,14 @@ export function UploadStep() {
 
         {tab === "words" && (
           <div>
-            <div className="label-xs mb-4">Your words · paste, type, or drop a .txt</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your words · paste, type, or drop a .txt</div>
+              {words.trim() && (
+                <button onClick={clearWords} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
             <Dropzone onFiles={handleWordsFile} accept="text/plain" multiple={false} className="">
               <textarea
                 value={words}
