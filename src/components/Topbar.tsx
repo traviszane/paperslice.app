@@ -1,6 +1,8 @@
 import { useZine, type Step } from "@/lib/store";
-import { Moon, Sun } from "lucide-react";
-import logoStamp from "@/assets/logo-stamp.png";
+import { Moon, Sun, LogOut } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import logoFold from "@/assets/logo-fold.png";
+import { useAuth, TIER_LABEL } from "@/hooks/use-auth";
 
 const STEPS: { n: Step; label: string }[] = [
   { n: 1, label: "upload" },
@@ -11,6 +13,7 @@ const STEPS: { n: Step; label: string }[] = [
 
 export function Topbar() {
   const { step, setStep, theme, toggleTheme, photos, videos, audios, words } = useZine();
+  const { user, profile, signOut } = useAuth();
 
   const wordCount = words.trim() ? 1 : 0;
   const counts = [
@@ -27,11 +30,10 @@ export function Topbar() {
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-6 px-6 py-4 md:px-10">
         <button
           onClick={() => setStep(1)}
-          className="flex items-center gap-2.5 leading-none"
+          className="flex items-center leading-none"
           aria-label="Paperslice home"
         >
-          <img src={logoStamp} alt="" width={36} height={36} className="h-9 w-9 -rotate-6" />
-          <span className="font-display text-2xl tracking-tight md:text-[28px]">paperslice</span>
+          <img src={logoFold} alt="paperslice" width={210} height={56} className="h-9 w-auto md:h-10" />
         </button>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -45,7 +47,7 @@ export function Topbar() {
                   onClick={() => setStep(s.n)}
                   className={`group flex items-center gap-1.5 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.15em] transition ${
                     active
-                      ? "bg-ink text-[color:var(--paper)]"
+                      ? "bg-ink text-[color:var(--cotton)]"
                       : done
                       ? "text-[color:var(--accent-red)] hover:bg-paper-deep"
                       : "text-ink-light hover:bg-paper-deep"
@@ -72,9 +74,34 @@ export function Topbar() {
           >
             {theme === "light" ? <Moon size={13} /> : <Sun size={13} />}
           </button>
-          <button className="hidden border border-rule px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink transition hover:bg-paper-warm md:block">
-            Sign in
-          </button>
+
+          {user && profile ? (
+            <div className="hidden items-center gap-2 md:flex">
+              <Link
+                to="/u/$username"
+                params={{ username: profile.username }}
+                className="border border-rule px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink hover:bg-paper-warm"
+              >
+                @{profile.username}
+                <span className="ml-2 text-[9px] text-ink-light">· {TIER_LABEL[profile.tier]}</span>
+              </Link>
+              <button
+                onClick={signOut}
+                className="grid h-8 w-8 place-items-center rounded-full border border-rule text-ink-mid hover:bg-paper-warm"
+                aria-label="Sign out"
+                title="Sign out"
+              >
+                <LogOut size={12} />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden border border-rule px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink transition hover:bg-paper-warm md:block"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       </div>
 
@@ -87,7 +114,7 @@ export function Topbar() {
               key={s.n}
               onClick={() => setStep(s.n)}
               className={`flex-1 rounded-full px-2 py-1.5 font-mono text-[9px] uppercase tracking-[0.12em] ${
-                active ? "bg-ink text-[color:var(--paper)]" : "text-ink-light"
+                active ? "bg-ink text-[color:var(--cotton)]" : "text-ink-light"
               }`}
             >
               {s.n}·{s.label}
@@ -100,19 +127,39 @@ export function Topbar() {
 }
 
 export function PublishBanner() {
+  const { user, profile } = useAuth();
+  if (user && profile) {
+    return (
+      <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--cotton)]">
+        <div className="mx-auto flex max-w-[1180px] items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
+          <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--accent-red)] sm:inline-block" />
+          <span className="text-[color:var(--cotton)]/80">
+            Signed in as @{profile.username} · {TIER_LABEL[profile.tier]} tier
+          </span>
+          <Link
+            to="/u/$username"
+            params={{ username: profile.username }}
+            className="font-medium uppercase tracking-[0.12em] text-[color:var(--accent-red)] hover:underline"
+          >
+            view your profile →
+          </Link>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--paper)]">
+    <div className="overflow-hidden border-b border-rule bg-ink text-[color:var(--cotton)]">
       <div className="mx-auto flex max-w-[1180px] items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
         <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--accent-red)] sm:inline-block" />
-        <span className="text-[color:var(--paper)]/80">
+        <span className="text-[color:var(--cotton)]/80">
           Sign in to publish your zine — get a public link + embed code
         </span>
-        <a
-          href="#"
+        <Link
+          to="/auth"
           className="font-medium uppercase tracking-[0.12em] text-[color:var(--accent-red)] hover:underline"
         >
           create a free account →
-        </a>
+        </Link>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { Dropzone } from "./Dropzone";
 
 type Tab = "photos" | "video" | "words" | "audio";
 
-const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 8 * 1024 * 1024; // 8MB post-compression target
 const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -55,8 +55,8 @@ export function UploadStep() {
         continue;
       }
       if (f.size > MAX_VIDEO_BYTES) {
-        toast.error(`${f.name} exceeds 20MB`);
-        continue;
+        toast.warning(`${f.name} is over 8MB — trim/compress coming in the next update.`);
+        // Allow for now; FFmpeg.wasm trim+compress is the next pass.
       }
       valid.push(f);
     }
@@ -170,7 +170,7 @@ export function UploadStep() {
 
         {tab === "video" && (
           <div>
-            <div className="label-xs mb-4">Your video · mp4, mov, webm · max 20MB</div>
+            <div className="label-xs mb-4">Your video · mp4, mov, webm · trim + compress to 8MB (FFmpeg coming next)</div>
             <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
               {videos.map((v) => (
                 <div key={v.id} className="group relative aspect-video overflow-hidden bg-ink">
