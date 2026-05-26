@@ -63,7 +63,7 @@ export function Topbar() {
                   onClick={() => setStep(s.n)}
                   className={`group flex items-center gap-1.5 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.15em] transition ${
                     active
-                      ? "bg-ink text-[color:var(--paper)]"
+                      ? "bg-[color:var(--clay)] text-[color:var(--cotton)]"
                       : done
                       ? "text-[color:var(--accent-red)] hover:bg-paper-deep"
                       : "text-ink-light hover:bg-paper-deep"
