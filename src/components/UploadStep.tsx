@@ -202,7 +202,14 @@ export function UploadStep() {
 
         {tab === "video" && (
           <div>
-            <div className="label-xs mb-4">Your video · mp4, mov, webm · trim + compress to 8MB (FFmpeg coming next)</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your video · mp4, mov, webm · trim + compress to 8MB</div>
+              {videos.length > 0 && (
+                <button onClick={clearVideos} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
             <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
               {videos.map((v) => (
                 <div key={v.id} className="group relative aspect-video overflow-hidden bg-ink">
