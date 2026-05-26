@@ -224,27 +224,26 @@ export function PublishBanner() {
   );
 
   return (
-    <div className="relative overflow-hidden border-b border-rule bg-paper-warm">
+    <div className="paperslice-banner relative overflow-hidden border-b border-rule bg-paper-warm">
       {/* paper-swatch collage layer */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         {swatches.map((s, i) => (
           <span
             key={i}
-            className="absolute h-[180%] rounded-[2px]"
+            className="banner-swatch absolute h-[180%] rounded-[2px]"
             style={{
               left: s.left,
               top: s.top,
               width: s.w,
               transform: `rotate(${s.rot})`,
-              background: `color-mix(in oklab, ${s.c} 70%, var(--cotton))`,
-              boxShadow: "0 1px 0 oklch(0 0 0 / 0.04)",
-              mixBlendMode: "multiply",
+              background: `color-mix(in oklab, ${s.c} var(--banner-swatch-strength), var(--cotton))`,
             }}
           />
         ))}
-        {/* subtle paper wash on top so text stays legible */}
-        <span className="absolute inset-0" style={{ background: "color-mix(in oklab, var(--cotton) 35%, transparent)" }} />
+        {/* paper wash on top so text stays legible — lighter in dark mode so colors pop */}
+        <span className="banner-wash absolute inset-0" />
       </div>
+
 
       <div className="relative mx-auto flex max-w-[1180px] flex-wrap items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
         <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--clay)] sm:inline-block" />
