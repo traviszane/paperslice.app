@@ -1,6 +1,6 @@
 import { useZine, type Step } from "@/lib/store";
 import { Moon, Sun } from "lucide-react";
-import logoStamp from "@/assets/logo-stamp.png";
+import logoFold from "@/assets/logo-fold.png";
 
 const STEPS: { n: Step; label: string }[] = [
   { n: 1, label: "upload" },
@@ -27,11 +27,10 @@ export function Topbar() {
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-6 px-6 py-4 md:px-10">
         <button
           onClick={() => setStep(1)}
-          className="flex items-center gap-2.5 leading-none"
+          className="flex items-center leading-none"
           aria-label="Paperslice home"
         >
-          <img src={logoStamp} alt="" width={36} height={36} className="h-9 w-9 -rotate-6" />
-          <span className="font-display text-2xl tracking-tight md:text-[28px]">paperslice</span>
+          <img src={logoFold} alt="paperslice" width={210} height={56} className="h-9 w-auto md:h-10" />
         </button>
 
         <nav className="hidden items-center gap-1 md:flex">
