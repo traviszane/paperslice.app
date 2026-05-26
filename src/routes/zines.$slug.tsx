@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { publicAssetUrl } from "@/lib/publish";
-import logoFold from "@/assets/logo-handprint.png";
+import logoFold from "@/assets/logo-paperslice.png";
 
 interface ZineAsset {
   id: string;
@@ -103,7 +103,7 @@ export const Route = createFileRoute("/zines/$slug")({
         <p className="mt-2 font-serif italic text-ink-mid">Or it hasn't been published yet.</p>
         <Link
           to="/"
-          className="mt-6 inline-block border border-ink px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-ink hover:text-[color:var(--cotton)]"
+          className="mt-6 inline-block border border-ink px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-ink hover:text-[color:var(--paper)]"
         >
           ← back to paperslice
         </Link>

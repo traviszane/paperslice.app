@@ -32,6 +32,8 @@ export interface ZinePage {
   rotate?: number;
   frameColor?: string;
   photoFilter?: string;
+  /** 0..0.25 — fraction of page used as padding around content */
+  spacing?: number;
 }
 
 export interface ZineDoc {
@@ -40,20 +42,27 @@ export interface ZineDoc {
   totalPages: number;
 }
 
-function pageCountFor(format: Format): number {
+function defaultPageCountFor(format: Format): number {
   switch (format) {
     case "single-sheet":
-    case "printable-zine":
       return 8;
+    case "printable-zine":
+      return 16;
     case "two-page":
       return 2;
     case "instagram":
-      return 12;
+      return 10;
     case "ebook":
     default:
       return 12;
   }
 }
+
+const SPACING_VALUE: Record<string, number> = {
+  tight: 0.035,
+  balanced: 0.10,
+  full: 0.18,
+};
 
 function splitParagraphs(words: string): string[] {
   return words.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
@@ -146,12 +155,16 @@ export function buildZine(args: {
   videos: VideoFile[];
   audios: AudioFile[];
   words: string;
+  pageCount?: number;
+  spacingMode?: "tight" | "balanced" | "full";
+  pageSpacings?: number[] | null;
 }): ZineDoc {
-  const total = pageCountFor(args.format);
+  const total = args.pageCount ?? defaultPageCountFor(args.format);
   const recipe = VIBES[args.vibe ?? "grain"] ?? VIBES.grain;
   const paras = splitParagraphs(args.words);
   const photos = args.photos;
   const photoCount = photos.length;
+  const baseSpacing = SPACING_VALUE[args.spacingMode ?? "balanced"] ?? 0.10;
 
   const interior = Math.max(0, total - 2);
   const slots: PageLayout[] = [];
@@ -241,6 +254,10 @@ export function buildZine(args: {
       ? recipe.frameColors[i % recipe.frameColors.length]
       : undefined;
 
+    const spacing = args.pageSpacings && args.pageSpacings[i] != null
+      ? args.pageSpacings[i]
+      : baseSpacing;
+
     pages.push({
       index: i,
       label: isCover ? "Cover" : isBack ? "Back" : `p.${i + 1}`,
@@ -256,6 +273,7 @@ export function buildZine(args: {
       rotate,
       frameColor,
       photoFilter: recipe.photoFilter,
+      spacing,
     });
   }
 

@@ -22,15 +22,19 @@ export function UploadStep() {
     photos,
     addPhotos,
     removePhoto,
+    clearPhotos,
     videos,
     addVideos,
     removeVideo,
+    clearVideos,
     setVideoPage,
     words,
     setWords,
+    clearWords,
     audios,
     addAudios,
     removeAudio,
+    clearAudios,
     setAudioPage,
     setStep,
   } = useZine();
@@ -148,7 +152,14 @@ export function UploadStep() {
 
         {tab === "photos" && (
           <div>
-            <div className="label-xs mb-4">Your photos · drag in jpg, png, webp</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your photos · drag in jpg, png, webp</div>
+              {photos.length > 0 && (
+                <button onClick={clearPhotos} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
             {photos.length === 0 ? (
               <Dropzone
                 onFiles={handlePhotos}
@@ -191,7 +202,14 @@ export function UploadStep() {
 
         {tab === "video" && (
           <div>
-            <div className="label-xs mb-4">Your video · mp4, mov, webm · trim + compress to 8MB (FFmpeg coming next)</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your video · mp4, mov, webm · trim + compress to 8MB</div>
+              {videos.length > 0 && (
+                <button onClick={clearVideos} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
             <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
               {videos.map((v) => (
                 <div key={v.id} className="group relative aspect-video overflow-hidden bg-ink">
@@ -237,7 +255,14 @@ export function UploadStep() {
 
         {tab === "words" && (
           <div>
-            <div className="label-xs mb-4">Your words · paste, type, or drop a .txt</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your words · paste, type, or drop a .txt</div>
+              {words.trim() && (
+                <button onClick={clearWords} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
             <Dropzone onFiles={handleWordsFile} accept="text/plain" multiple={false} className="">
               <textarea
                 value={words}
@@ -256,7 +281,19 @@ export function UploadStep() {
 
         {tab === "audio" && (
           <div>
-            <div className="label-xs mb-4">Your audio · mp3, wav · max 10MB · plays at assigned page</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your audio · mp3, wav, or .mp4 (audio extracted) · max 10MB</div>
+              {audios.length > 0 && (
+                <button onClick={clearAudios} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
+            {extracting && (
+              <div className="mb-3 border border-rule bg-paper-warm px-3 py-2 font-mono text-[10px] text-ink-mid flicker">
+                extracting audio from video…
+              </div>
+            )}
             {audios.map((a) => (
               <div key={a.id} className="flex items-center gap-3 border-b border-rule py-3">
                 <button
@@ -321,6 +358,14 @@ export function UploadStep() {
           Continue to format →
         </button>
       </aside>
+
+      {trimmerFile && (
+        <VideoTrimmer
+          file={trimmerFile}
+          onCancel={() => setTrimmerFile(null)}
+          onDone={handleTrimmerDone}
+        />
+      )}
     </div>
   );
 }

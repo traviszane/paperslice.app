@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import logoFold from "@/assets/logo-fold.png";
+import logoFold from "@/assets/logo-paperslice.png";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -53,7 +53,7 @@ function AuthPage() {
     <div className="grain min-h-screen bg-paper text-ink">
       <div className="mx-auto flex min-h-screen max-w-[440px] flex-col justify-center px-6 py-12">
         <Link to="/" className="mb-10 flex items-center" aria-label="Paperslice home">
-          <img src={logoFold} alt="paperslice" className="h-10 w-auto" />
+          <img src={logoFold} alt="paperslice" className="h-16 w-auto md:h-20" />
         </Link>
 
         <h1 className="font-display text-4xl tracking-tight md:text-5xl">
@@ -99,7 +99,7 @@ function AuthPage() {
           <button
             type="submit"
             disabled={busy}
-            className="w-full bg-ink py-3.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--cotton)] transition hover:bg-[color:var(--accent-red)] disabled:opacity-60"
+            className="w-full bg-ink py-3.5 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--paper)] transition hover:bg-[color:var(--accent-red)] disabled:opacity-60"
           >
             {busy ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}
           </button>

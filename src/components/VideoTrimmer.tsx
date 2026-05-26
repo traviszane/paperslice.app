@@ -261,7 +261,7 @@ export function VideoTrimmer({ file, onCancel, onDone }: Props) {
             <button
               onClick={handleConfirm}
               disabled={processing || selectedDuration < 0.5}
-              className="flex-[2] bg-ink px-4 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--cotton)] hover:bg-[color:var(--accent-red)] disabled:opacity-40"
+              className="flex-[2] bg-ink px-4 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--paper)] hover:bg-[color:var(--accent-red)] disabled:opacity-40"
             >
               {processing ? "compressing…" : `trim & compress (${formatDuration(selectedDuration)})`}
             </button>

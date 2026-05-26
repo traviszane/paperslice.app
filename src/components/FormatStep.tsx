@@ -1,4 +1,5 @@
-import { useZine, HEADER_FONTS, BODY_FONTS, type Format, type IGRatio, type TextShape, type Vibe } from "@/lib/store";
+import { Minus, Plus, Shuffle } from "lucide-react";
+import { useZine, HEADER_FONTS, BODY_FONTS, pageCountConfig, type Format, type IGRatio, type TextShape, type Vibe, type SpacingMode } from "@/lib/store";
 
 const FORMATS: { id: Format; name: string; desc: string; badge: string }[] = [
   { id: "single-sheet", name: "Single Sheet", desc: "8-panel · fold + cut one page", badge: "A4 / Letter" },
@@ -34,6 +35,14 @@ export function FormatStep() {
     setFormat,
     igRatio,
     setIGRatio,
+    pageCount,
+    setPageCount,
+    spacingMode,
+    setSpacingMode,
+    pageSpacings,
+    setPageSpacings,
+    photos,
+    words,
     headerFont,
     bodyFont,
     setHeaderFont,
@@ -44,6 +53,27 @@ export function FormatStep() {
     setVibe,
     setStep,
   } = useZine();
+
+  const cfg = pageCountConfig(format);
+  const textBlocks = words.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).length;
+
+  const stepPages = (dir: 1 | -1) => {
+    const next = pageCount + dir * cfg.step;
+    if (next < cfg.min || next > cfg.max) return;
+    setPageCount(next);
+  };
+
+  const randomizeSpacing = () => {
+    // Range bounded by selected mode
+    const ranges: Record<SpacingMode, [number, number]> = {
+      tight: [0.02, 0.10],
+      balanced: [0.05, 0.16],
+      full: [0.04, 0.22],
+    };
+    const [lo, hi] = ranges[spacingMode];
+    const arr = Array.from({ length: pageCount }, () => +(lo + Math.random() * (hi - lo)).toFixed(3));
+    setPageSpacings(arr);
+  };
 
   return (
     <div className="grid gap-0 md:grid-cols-[1fr_360px] min-h-[calc(100vh-130px)]">
@@ -94,6 +124,90 @@ export function FormatStep() {
               </button>
             );
           })}
+        </div>
+
+        {/* Page count + spacing */}
+        <div className="mt-8 grid gap-6 border-t border-rule pt-7 md:grid-cols-2">
+          {/* Page count */}
+          <section>
+            <div className="label-xs mb-3">Page count</div>
+            {cfg.fixed ? (
+              <div className="border border-rule bg-card px-4 py-3 font-mono text-[11px] text-ink-mid">
+                {cfg.note}
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => stepPages(-1)}
+                  disabled={pageCount - cfg.step < cfg.min}
+                  className="grid h-10 w-10 place-items-center border border-rule bg-card text-ink hover:bg-paper-warm disabled:opacity-30"
+                  aria-label="Decrease pages"
+                >
+                  <Minus size={14} />
+                </button>
+                <div className="flex-1 border border-rule bg-card px-4 py-2.5 text-center font-display text-2xl text-ink">
+                  {pageCount}
+                </div>
+                <button
+                  onClick={() => stepPages(1)}
+                  disabled={pageCount + cfg.step > cfg.max}
+                  className="grid h-10 w-10 place-items-center border border-rule bg-card text-ink hover:bg-paper-warm disabled:opacity-30"
+                  aria-label="Increase pages"
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            )}
+            <p className="mt-2 font-mono text-[10px] text-ink-light">
+              {cfg.fixed
+                ? `Your ${photos.length} photos and ${textBlocks} text blocks will be distributed across ${cfg.default} pages.`
+                : `Range: ${cfg.min}${cfg.step > 1 ? `, ${cfg.min + cfg.step}, ${cfg.min + cfg.step * 2}…` : `–${cfg.max}`} · Your ${photos.length} photos and ${textBlocks} text blocks will be distributed across ${pageCount} pages.`}
+            </p>
+          </section>
+
+          {/* Photo spacing */}
+          <section>
+            <div className="mb-3 flex items-center justify-between">
+              <div className="label-xs">Photo spacing</div>
+              <button
+                onClick={randomizeSpacing}
+                className="flex items-center gap-1.5 border border-rule bg-card px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-mid hover:bg-paper-warm"
+                title="Randomize spacing per page"
+              >
+                <Shuffle size={11} /> randomize spacing
+              </button>
+            </div>
+            <div className="border border-rule bg-card px-4 py-4">
+              <input
+                type="range"
+                min={0}
+                max={2}
+                step={1}
+                value={spacingMode === "tight" ? 0 : spacingMode === "balanced" ? 1 : 2}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setSpacingMode(v === 0 ? "tight" : v === 1 ? "balanced" : "full");
+                }}
+                className="w-full accent-[color:var(--accent-red)]"
+              />
+              <div className="mt-2 flex justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-ink-light">
+                <span className={spacingMode === "tight" ? "text-ink" : ""}>Tight</span>
+                <span className={spacingMode === "balanced" ? "text-ink" : ""}>Balanced</span>
+                <span className={spacingMode === "full" ? "text-ink" : ""}>Full spread</span>
+              </div>
+            </div>
+            {pageSpacings ? (
+              <p className="mt-2 font-serif text-[11px] italic text-ink-mid">
+                Each page has its own spacing — your zine will feel handmade.
+              </p>
+            ) : (
+              <p className="mt-2 font-mono text-[10px] text-ink-light">
+                {spacingMode === "tight" && "Photos fill most of the panel — punchy and dense."}
+                {spacingMode === "balanced" && "Comfortable editorial margins."}
+                {spacingMode === "full" && "Photos bleed with generous breathing room — one per page."}
+              </p>
+            )}
+          </section>
         </div>
       </div>
 

@@ -44,8 +44,11 @@ export function GenerateStep() {
         videos: state.videos,
         audios: state.audios,
         words: state.words,
+        pageCount: state.pageCount,
+        spacingMode: state.spacingMode,
+        pageSpacings: state.pageSpacings,
       }),
-    [state.title, state.format, state.vibe, state.photos, state.videos, state.audios, state.words]
+    [state.title, state.format, state.vibe, state.photos, state.videos, state.audios, state.words, state.pageCount, state.spacingMode, state.pageSpacings]
   );
 
   if (loading) {
@@ -623,12 +626,21 @@ function ZinePageView({
     }
   };
 
+  // Apply per-page spacing as outer padding (skip for cover/back/video/photo-bleed
+  // because those layouts are meant to fill).
+  const skipSpacing =
+    page.layout === "cover" ||
+    page.layout === "back" ||
+    page.layout === "video" ||
+    page.layout === "photo-bleed";
+  const pad = !skipSpacing && page.spacing ? `${(page.spacing * 100).toFixed(1)}%` : "0";
+
   return (
     <div
       className={`relative h-full w-full overflow-hidden ${grainOverlay} ${side === "right" ? "border-l border-rule" : ""}`}
-      style={{ background: bg }}
+      style={{ background: bg, padding: pad }}
     >
-      {renderContent()}
+      <div className="relative h-full w-full">{renderContent()}</div>
     </div>
   );
 }
