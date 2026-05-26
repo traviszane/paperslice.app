@@ -220,7 +220,13 @@ export type Database = {
         | "printable-zine"
         | "two-page"
         | "instagram"
-      zine_vibe: "grain" | "editorial" | "collage" | "typewriter" | "minimal"
+      zine_vibe:
+        | "grain"
+        | "editorial"
+        | "collage"
+        | "typewriter"
+        | "minimal"
+        | "colorful"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -367,7 +373,14 @@ export const Constants = {
         "two-page",
         "instagram",
       ],
-      zine_vibe: ["grain", "editorial", "collage", "typewriter", "minimal"],
+      zine_vibe: [
+        "grain",
+        "editorial",
+        "collage",
+        "typewriter",
+        "minimal",
+        "colorful",
+      ],
     },
   },
 } as const

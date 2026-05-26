@@ -1,0 +1,1 @@
+ALTER TYPE zine_vibe ADD VALUE IF NOT EXISTS 'colorful';
