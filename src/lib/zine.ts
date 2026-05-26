@@ -254,6 +254,10 @@ export function buildZine(args: {
       ? recipe.frameColors[i % recipe.frameColors.length]
       : undefined;
 
+    const spacing = args.pageSpacings && args.pageSpacings[i] != null
+      ? args.pageSpacings[i]
+      : baseSpacing;
+
     pages.push({
       index: i,
       label: isCover ? "Cover" : isBack ? "Back" : `p.${i + 1}`,
@@ -269,6 +273,7 @@ export function buildZine(args: {
       rotate,
       frameColor,
       photoFilter: recipe.photoFilter,
+      spacing,
     });
   }
 
