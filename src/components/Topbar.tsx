@@ -134,7 +134,7 @@ export function Topbar() {
               key={s.n}
               onClick={() => setStep(s.n)}
               className={`flex-1 rounded-full px-2 py-1.5 font-mono text-[9px] uppercase tracking-[0.12em] ${
-                active ? "bg-ink text-[color:var(--paper)]" : "text-ink-light"
+                active ? "bg-[color:var(--clay)] text-[color:var(--cotton)]" : "text-ink-light"
               }`}
             >
               {s.n}·{s.label}
