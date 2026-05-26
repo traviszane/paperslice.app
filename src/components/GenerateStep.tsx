@@ -331,6 +331,8 @@ function tokenToBg(token?: string): string {
   return `var(--${token})`;
 }
 
+const DARK_TOKENS = new Set(["clay", "ink"]);
+
 function ZinePageView({
   page,
   headerFont,
@@ -347,35 +349,50 @@ function ZinePageView({
   side?: "left" | "right";
 }) {
   const bg = tokenToBg(page.bgToken);
-  const isDarkBg = page.bgToken === "clay" || page.bgToken === "ink";
+  const isDarkBg = !!page.bgToken && DARK_TOKENS.has(page.bgToken);
   const ink = isDarkBg ? "var(--cotton)" : "var(--ink)";
-  const inkMid = isDarkBg ? "color-mix(in oklab, var(--cotton) 80%, transparent)" : "var(--ink-mid)";
+  const inkMid = isDarkBg
+    ? "color-mix(in oklab, var(--cotton) 80%, transparent)"
+    : "var(--ink-mid)";
 
+  // vibe-specific page-level effects
   const grainOverlay =
     vibe === "grain"
-      ? "after:absolute after:inset-0 after:opacity-30 after:mix-blend-multiply after:pointer-events-none after:[background-image:radial-gradient(circle_at_30%_20%,_transparent_0,_rgba(0,0,0,0.08)_100%)]"
+      ? "after:absolute after:inset-0 after:opacity-30 after:mix-blend-multiply after:pointer-events-none after:[background-image:radial-gradient(circle_at_30%_20%,_transparent_0,_rgba(0,0,0,0.10)_100%)]"
       : "";
 
-  // Render layouts
+  const imgStyle: React.CSSProperties = page.photoFilter
+    ? { filter: page.photoFilter }
+    : {};
+
+  // Body font is forced for some vibes
+  const effectiveBodyFont = vibe === "typewriter" ? "Courier Prime" : bodyFont;
+  const effectiveHeaderFont = vibe === "typewriter" ? "Courier Prime" : headerFont;
+  const headerItalic = vibe === "editorial";
+  const headerWeight = vibe === "minimal" || vibe === "typewriter" ? 400 : 700;
+
   const renderContent = () => {
     switch (page.layout) {
       case "cover":
         return (
           <div className="absolute inset-0 flex flex-col">
             {page.photo && (
-              <div className="relative flex-1 overflow-hidden m-4 mb-3">
-                <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+              <div
+                className="relative flex-1 overflow-hidden m-4 mb-3"
+                style={vibe === "colorful" ? { border: `6px solid ${page.frameColor || "var(--clay)"}` } : undefined}
+              >
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" style={imgStyle} />
               </div>
             )}
             <div className="px-5 pb-5">
               <ArtfulHeading
                 text={page.heading || "Untitled"}
                 shape={shape}
-                font={headerFont}
-                size={32}
-                color={ink}
-                italic={vibe === "editorial"}
-                weight={vibe === "minimal" ? 400 : 700}
+                font={effectiveHeaderFont}
+                size={vibe === "colorful" ? 36 : 30}
+                color={vibe === "colorful" ? "var(--clay)" : ink}
+                italic={headerItalic}
+                weight={headerWeight}
               />
               <div className="mt-2 font-mono text-[8px] uppercase tracking-[0.22em]" style={{ color: inkMid }}>
                 a paperslice zine
@@ -388,7 +405,14 @@ function ZinePageView({
         return (
           <div className="absolute inset-0 grid place-items-center">
             <div className="text-center">
-              <div className="font-display text-2xl italic" style={{ color: ink }}>fin.</div>
+              {vibe === "colorful" && (
+                <div className="mx-auto mb-3 flex gap-1 justify-center">
+                  {["var(--clay)","var(--sage)","var(--sky)","var(--blush)","var(--lavender)","var(--butter)"].map((c)=>(
+                    <span key={c} className="h-2 w-2 rounded-full" style={{background: c}} />
+                  ))}
+                </div>
+              )}
+              <ArtfulHeading text="fin." shape={shape} font={effectiveHeaderFont} size={28} color={ink} italic />
               <div className="mt-2 font-mono text-[8px] uppercase tracking-[0.22em]" style={{ color: inkMid }}>
                 paperslice.app
               </div>
@@ -400,7 +424,7 @@ function ZinePageView({
         return (
           <>
             {page.photo && (
-              <img src={page.photo.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              <img src={page.photo.url} alt="" className="absolute inset-0 h-full w-full object-cover" style={imgStyle} />
             )}
           </>
         );
@@ -410,13 +434,13 @@ function ZinePageView({
           <div className="absolute inset-0 flex flex-col p-5">
             {page.photo && (
               <div className="relative aspect-[4/5] overflow-hidden mb-3 shadow-[0_4px_12px_-6px_rgba(0,0,0,0.25)]">
-                <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" style={imgStyle} />
               </div>
             )}
             {page.body && (
               <p
                 className="text-[9.5px] leading-[1.55]"
-                style={{ fontFamily: bodyFont, color: inkMid, fontStyle: vibe === "editorial" ? "italic" : "normal" }}
+                style={{ fontFamily: effectiveBodyFont, color: inkMid, fontStyle: headerItalic ? "italic" : "normal" }}
               >
                 {page.body.slice(0, 160)}{page.body.length > 160 ? "…" : ""}
               </p>
@@ -424,14 +448,43 @@ function ZinePageView({
           </div>
         );
 
+      case "photo-bordered":
+        return (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+            {page.photo && (
+              <div
+                className="relative aspect-square w-[78%] overflow-hidden"
+                style={{
+                  border: `8px solid ${page.frameColor || "var(--clay)"}`,
+                  transform: `rotate(${page.rotate ?? 0}deg)`,
+                  boxShadow: "0 10px 24px -14px rgba(0,0,0,0.35)",
+                }}
+              >
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" style={imgStyle} />
+              </div>
+            )}
+            {page.heading && (
+              <div
+                className="mt-4 font-mono text-[9px] uppercase tracking-[0.22em] text-center"
+                style={{ color: ink }}
+              >
+                {page.heading.slice(0, 40)}
+              </div>
+            )}
+          </div>
+        );
+
       case "photo-polaroid":
         return (
           <div className="absolute inset-0 grid place-items-center p-6">
-            <div className="relative rotate-[-3deg] bg-[color:var(--cotton)] p-2 pb-8 shadow-[0_8px_18px_-8px_rgba(0,0,0,0.35)]">
+            <div
+              className="relative bg-[color:var(--cotton)] p-2 pb-7 shadow-[0_8px_18px_-8px_rgba(0,0,0,0.4)]"
+              style={{ transform: `rotate(${page.rotate ?? -3}deg)` }}
+            >
               <div className="tape absolute -top-2 left-1/2 h-4 w-12 -translate-x-1/2 rotate-[2deg]" />
               {page.photo && (
-                <div className="aspect-square w-44 overflow-hidden">
-                  <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+                <div className="aspect-square w-40 overflow-hidden">
+                  <img src={page.photo.url} alt="" className="h-full w-full object-cover" style={imgStyle} />
                 </div>
               )}
               <div className="mt-1 text-center font-mono text-[8px] uppercase tracking-[0.18em] text-[color:var(--ink-mid)]">
@@ -445,13 +498,33 @@ function ZinePageView({
         return (
           <div className="absolute inset-0 grid grid-rows-2 gap-2 p-4">
             {page.photo && (
-              <div className="relative overflow-hidden">
-                <img src={page.photo.url} alt="" className="h-full w-full object-cover" />
+              <div
+                className="relative overflow-hidden"
+                style={page.frameColor ? { border: `4px solid ${page.frameColor}` } : undefined}
+              >
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" style={imgStyle} />
               </div>
             )}
             {page.photoB && (
-              <div className="relative overflow-hidden ml-6">
-                <img src={page.photoB.url} alt="" className="h-full w-full object-cover" />
+              <div
+                className="relative overflow-hidden ml-6"
+                style={page.frameColor ? { border: `4px solid ${page.frameColor}` } : undefined}
+              >
+                <img src={page.photoB.url} alt="" className="h-full w-full object-cover" style={imgStyle} />
+              </div>
+            )}
+          </div>
+        );
+
+      case "photo-tiny":
+        return (
+          <div className="absolute inset-0 grid place-items-center p-10">
+            {page.photo && (
+              <div
+                className="aspect-square w-28 overflow-hidden shadow-[0_6px_14px_-8px_rgba(0,0,0,0.35)]"
+                style={{ transform: `rotate(${page.rotate ?? 0}deg)` }}
+              >
+                <img src={page.photo.url} alt="" className="h-full w-full object-cover" style={imgStyle} />
               </div>
             )}
           </div>
@@ -464,17 +537,17 @@ function ZinePageView({
               <ArtfulHeading
                 text={page.heading}
                 shape={shape}
-                font={headerFont}
-                size={22}
+                font={effectiveHeaderFont}
+                size={vibe === "colorful" ? 28 : 22}
                 color={ink}
-                italic={vibe === "editorial"}
-                weight={vibe === "minimal" ? 400 : 700}
+                italic={headerItalic}
+                weight={headerWeight}
               />
             )}
             {page.body && (
               <p
                 className="mt-3 text-[11px] leading-[1.7]"
-                style={{ fontFamily: bodyFont, color: inkMid, fontStyle: vibe === "editorial" ? "italic" : "normal" }}
+                style={{ fontFamily: effectiveBodyFont, color: inkMid, fontStyle: headerItalic ? "italic" : "normal" }}
               >
                 {page.body.slice(0, 280)}{page.body.length > 280 ? "…" : ""}
               </p>
@@ -488,10 +561,44 @@ function ZinePageView({
             <div className="mb-2 font-mono text-[8px] uppercase tracking-[0.22em]" style={{ color: inkMid }}>—</div>
             <p
               className="font-display text-[18px] italic leading-[1.3]"
-              style={{ color: ink }}
+              style={{ color: ink, fontFamily: effectiveHeaderFont }}
             >
-              "{(page.body || "").slice(0, 120)}{(page.body || "").length > 120 ? "…" : ""}"
+              "{(page.body || page.heading || "").slice(0, 120)}{((page.body || page.heading || "")).length > 120 ? "…" : ""}"
             </p>
+          </div>
+        );
+
+      case "text-block":
+        return (
+          <div className="absolute inset-0 flex flex-col p-7">
+            {page.heading && (
+              <div
+                className="mb-3 font-mono text-[12px] uppercase tracking-[0.05em]"
+                style={{ color: ink, fontFamily: "Courier Prime" }}
+              >
+                {page.heading}
+              </div>
+            )}
+            {page.body && (
+              <pre
+                className="whitespace-pre-wrap text-[10px] leading-[1.7]"
+                style={{ color: inkMid, fontFamily: "Courier Prime" }}
+              >
+                {page.body.slice(0, 360)}{page.body.length > 360 ? "…" : ""}
+              </pre>
+            )}
+          </div>
+        );
+
+      case "color-block":
+        return (
+          <div className="absolute inset-0 flex flex-col items-end justify-end p-5">
+            <span
+              className="font-mono text-[8px] uppercase tracking-[0.3em]"
+              style={{ color: inkMid }}
+            >
+              {page.label}
+            </span>
           </div>
         );
 
@@ -525,3 +632,4 @@ function ZinePageView({
     </div>
   );
 }
+
