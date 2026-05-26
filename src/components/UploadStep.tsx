@@ -281,7 +281,19 @@ export function UploadStep() {
 
         {tab === "audio" && (
           <div>
-            <div className="label-xs mb-4">Your audio · mp3, wav · max 10MB · plays at assigned page</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your audio · mp3, wav, or .mp4 (audio extracted) · max 10MB</div>
+              {audios.length > 0 && (
+                <button onClick={clearAudios} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
+            {extracting && (
+              <div className="mb-3 border border-rule bg-paper-warm px-3 py-2 font-mono text-[10px] text-ink-mid flicker">
+                extracting audio from video…
+              </div>
+            )}
             {audios.map((a) => (
               <div key={a.id} className="flex items-center gap-3 border-b border-rule py-3">
                 <button
