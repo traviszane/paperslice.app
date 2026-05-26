@@ -350,13 +350,13 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
             <button
               onClick={toggleRandomize}
               className={`flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.12em] transition ${
-                randomizeOn
+                randomized
                   ? "border-[color:var(--accent-red)] bg-[color:var(--accent-red)] text-[color:var(--cotton)]"
                   : "border-rule bg-card text-ink-mid hover:bg-paper-deep"
               }`}
               title="Randomize spacing per page"
             >
-              <Shuffle size={11} /> {randomizeOn ? "randomized ✓" : "randomize"}
+              <Shuffle size={11} /> {randomized ? "randomized ✓" : "randomize"}
             </button>
           </div>
           <div className="border border-rule bg-card px-4 py-4">
@@ -367,7 +367,7 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
               step={1}
               value={spacingMode === "tight" ? 0 : spacingMode === "balanced" ? 1 : 2}
               onChange={(e) => setSpacingValue(Number(e.target.value) as 0 | 1 | 2)}
-              disabled={randomizeOn}
+              disabled={randomized}
               className="w-full accent-[color:var(--accent-red)] disabled:opacity-40"
             />
             <div className="mt-2 flex justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-ink-light">
@@ -376,7 +376,7 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
               <span className={spacingMode === "full" ? "text-ink" : ""}>Full spread</span>
             </div>
           </div>
-          {randomizeOn && (
+          {randomized && (
             <p className="mt-2 font-serif text-[11px] italic text-ink-mid">
               Each page has its own spacing — your zine will feel handmade.
             </p>
