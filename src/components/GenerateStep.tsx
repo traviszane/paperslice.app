@@ -193,26 +193,39 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
   const next = () => setPageIdx((i) => Math.min(i + 1, doc.pages.length - 1));
   const prev = () => setPageIdx((i) => Math.max(i - 1, 0));
 
-  // ---- Spacing controls (live)
-  const randomizeOn = !!pageSpacings;
+  // ---- Spacing controls (live, mutate snapshot directly so editor edits aren't lost)
+  const [liveMode, setLiveMode] = useState<SpacingMode>(spacingMode);
+  const [randomized, setRandomized] = useState<boolean>(!!pageSpacings);
+  const SPACING_MAP: Record<SpacingMode, number> = { tight: 0.015, balanced: 0.05, full: 0.09 };
+  const applyUniform = (mode: SpacingMode) => {
+    const v = SPACING_MAP[mode];
+    doc.pages.forEach((_p, i) => updatePage(i, { spacing: v }));
+  };
+  const applyRandom = () => {
+    const ranges: Record<SpacingMode, [number, number]> = {
+      tight: [0.01, 0.05],
+      balanced: [0.03, 0.10],
+      full: [0.04, 0.14],
+    };
+    const [lo, hi] = ranges[liveMode];
+    doc.pages.forEach((_p, i) =>
+      updatePage(i, { spacing: +(lo + Math.random() * (hi - lo)).toFixed(3) })
+    );
+  };
   const toggleRandomize = () => {
-    if (randomizeOn) {
-      setPageSpacings(null);
+    if (randomized) {
+      setRandomized(false);
+      applyUniform(liveMode);
     } else {
-      const ranges: Record<SpacingMode, [number, number]> = {
-        tight: [0.02, 0.10],
-        balanced: [0.05, 0.16],
-        full: [0.04, 0.22],
-      };
-      const [lo, hi] = ranges[spacingMode];
-      const arr = Array.from({ length: pageCount }, () => +(lo + Math.random() * (hi - lo)).toFixed(3));
-      setPageSpacings(arr);
+      setRandomized(true);
+      applyRandom();
     }
   };
   const setSpacingValue = (v: 0 | 1 | 2) => {
     const mode: SpacingMode = v === 0 ? "tight" : v === 1 ? "balanced" : "full";
-    setSpacingMode(mode);
-    // Live: write spacing onto every page (the snapshot will be reset by setSpacingMode → re-snapshot on next useEffect)
+    setLiveMode(mode);
+    setRandomized(false);
+    applyUniform(mode);
   };
 
   // Page strip DnD
