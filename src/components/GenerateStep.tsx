@@ -66,7 +66,7 @@ export function GenerateStep() {
         audios: state.audios,
         words: state.words,
         pageCount: state.pageCount,
-        spacingMode: state.spacingMode,
+        liveMode: state.liveMode,
         pageSpacings: state.pageSpacings,
       }),
     // we intentionally lock the initial doc — the editor mutates editedDoc afterwards
@@ -121,7 +121,7 @@ export function GenerateStep() {
           audios: state.audios,
           words: state.words,
           pageCount: state.pageCount,
-          spacingMode: state.spacingMode,
+          liveMode: state.liveMode,
           pageSpacings: state.pageSpacings,
         });
         setEditedDoc(fresh);
@@ -190,7 +190,7 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
   const prev = () => setPageIdx((i) => Math.max(i - 1, 0));
 
   // ---- Spacing controls (live, mutate snapshot directly so editor edits aren't lost)
-  const [liveMode, setLiveMode] = useState<SpacingMode>(spacingMode);
+  const [liveMode, setLiveMode] = useState<SpacingMode>(liveMode);
   const [randomized, setRandomized] = useState<boolean>(!!pageSpacings);
   const SPACING_MAP: Record<SpacingMode, number> = { tight: 0.015, balanced: 0.05, full: 0.09 };
   const applyUniform = (mode: SpacingMode) => {
@@ -361,15 +361,15 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
               min={0}
               max={2}
               step={1}
-              value={spacingMode === "tight" ? 0 : spacingMode === "balanced" ? 1 : 2}
+              value={liveMode === "tight" ? 0 : liveMode === "balanced" ? 1 : 2}
               onChange={(e) => setSpacingValue(Number(e.target.value) as 0 | 1 | 2)}
               disabled={randomized}
               className="w-full accent-[color:var(--accent-red)] disabled:opacity-40"
             />
             <div className="mt-2 flex justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-ink-light">
-              <span className={spacingMode === "tight" ? "text-ink" : ""}>Tight</span>
-              <span className={spacingMode === "balanced" ? "text-ink" : ""}>Balanced</span>
-              <span className={spacingMode === "full" ? "text-ink" : ""}>Full spread</span>
+              <span className={liveMode === "tight" ? "text-ink" : ""}>Tight</span>
+              <span className={liveMode === "balanced" ? "text-ink" : ""}>Balanced</span>
+              <span className={liveMode === "full" ? "text-ink" : ""}>Full spread</span>
             </div>
           </div>
           {randomized && (
