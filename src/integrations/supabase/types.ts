@@ -14,16 +14,213 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assets: {
+        Row: {
+          created_at: string
+          duration_sec: number | null
+          id: string
+          kind: Database["public"]["Enums"]["asset_kind"]
+          mime_type: string | null
+          name: string
+          page: number | null
+          position: number
+          size_bytes: number
+          storage_path: string | null
+          text_content: string | null
+          user_id: string
+          zine_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_sec?: number | null
+          id?: string
+          kind: Database["public"]["Enums"]["asset_kind"]
+          mime_type?: string | null
+          name: string
+          page?: number | null
+          position?: number
+          size_bytes?: number
+          storage_path?: string | null
+          text_content?: string | null
+          user_id: string
+          zine_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_sec?: number | null
+          id?: string
+          kind?: Database["public"]["Enums"]["asset_kind"]
+          mime_type?: string | null
+          name?: string
+          page?: number | null
+          position?: number
+          size_bytes?: number
+          storage_path?: string | null
+          text_content?: string | null
+          user_id?: string
+          zine_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_zine_id_fkey"
+            columns: ["zine_id"]
+            isOneToOne: false
+            referencedRelation: "zines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          tier: Database["public"]["Enums"]["tier_name"]
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          tier?: Database["public"]["Enums"]["tier_name"]
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          tier?: Database["public"]["Enums"]["tier_name"]
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      tiers: {
+        Row: {
+          can_remove_watermark: boolean
+          created_at: string
+          label: string
+          max_zines: number | null
+          monthly_price_cents: number
+          name: Database["public"]["Enums"]["tier_name"]
+          storage_bytes: number
+        }
+        Insert: {
+          can_remove_watermark?: boolean
+          created_at?: string
+          label: string
+          max_zines?: number | null
+          monthly_price_cents?: number
+          name: Database["public"]["Enums"]["tier_name"]
+          storage_bytes: number
+        }
+        Update: {
+          can_remove_watermark?: boolean
+          created_at?: string
+          label?: string
+          max_zines?: number | null
+          monthly_price_cents?: number
+          name?: Database["public"]["Enums"]["tier_name"]
+          storage_bytes?: number
+        }
+        Relationships: []
+      }
+      zines: {
+        Row: {
+          body_font: string
+          cover_path: string | null
+          created_at: string
+          format: Database["public"]["Enums"]["zine_format"]
+          header_font: string
+          id: string
+          ig_ratio: string | null
+          published: boolean
+          published_at: string | null
+          slug: string | null
+          text_shape: Database["public"]["Enums"]["text_shape"]
+          title: string
+          updated_at: string
+          user_id: string
+          vibe: Database["public"]["Enums"]["zine_vibe"]
+          view_count: number
+          words: string
+        }
+        Insert: {
+          body_font?: string
+          cover_path?: string | null
+          created_at?: string
+          format?: Database["public"]["Enums"]["zine_format"]
+          header_font?: string
+          id?: string
+          ig_ratio?: string | null
+          published?: boolean
+          published_at?: string | null
+          slug?: string | null
+          text_shape?: Database["public"]["Enums"]["text_shape"]
+          title?: string
+          updated_at?: string
+          user_id: string
+          vibe?: Database["public"]["Enums"]["zine_vibe"]
+          view_count?: number
+          words?: string
+        }
+        Update: {
+          body_font?: string
+          cover_path?: string | null
+          created_at?: string
+          format?: Database["public"]["Enums"]["zine_format"]
+          header_font?: string
+          id?: string
+          ig_ratio?: string | null
+          published?: boolean
+          published_at?: string | null
+          slug?: string | null
+          text_shape?: Database["public"]["Enums"]["text_shape"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+          vibe?: Database["public"]["Enums"]["zine_vibe"]
+          view_count?: number
+          words?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      bump_zine_view: { Args: { _slug: string }; Returns: undefined }
+      user_storage_bytes: { Args: { _user_id: string }; Returns: number }
+      user_tier_limit: { Args: { _user_id: string }; Returns: number }
     }
     Enums: {
-      [_ in never]: never
+      asset_kind: "photo" | "video" | "audio" | "text"
+      text_shape:
+        | "normal"
+        | "wavy"
+        | "circle"
+        | "diagonal"
+        | "stacked"
+        | "scattered"
+        | "outlined"
+        | "arc"
+      tier_name: "free" | "maker" | "pro"
+      zine_format:
+        | "single-sheet"
+        | "ebook"
+        | "printable-zine"
+        | "two-page"
+        | "instagram"
+      zine_vibe: "grain" | "editorial" | "collage" | "typewriter" | "minimal"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +347,27 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      asset_kind: ["photo", "video", "audio", "text"],
+      text_shape: [
+        "normal",
+        "wavy",
+        "circle",
+        "diagonal",
+        "stacked",
+        "scattered",
+        "outlined",
+        "arc",
+      ],
+      tier_name: ["free", "maker", "pro"],
+      zine_format: [
+        "single-sheet",
+        "ebook",
+        "printable-zine",
+        "two-page",
+        "instagram",
+      ],
+      zine_vibe: ["grain", "editorial", "collage", "typewriter", "minimal"],
+    },
   },
 } as const
