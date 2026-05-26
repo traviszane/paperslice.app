@@ -191,7 +191,7 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
   const prev = () => setPageIdx((i) => Math.max(i - 1, 0));
 
   // ---- Spacing controls (live, mutate snapshot directly so editor edits aren't lost)
-  const [liveMode, setLiveMode] = useState<SpacingMode>(liveMode);
+  const [liveMode, setLiveMode] = useState<SpacingMode>(spacingMode);
   const [randomized, setRandomized] = useState<boolean>(!!pageSpacings);
   const SPACING_MAP: Record<SpacingMode, number> = { tight: 0.015, balanced: 0.05, full: 0.09 };
   const applyUniform = (mode: SpacingMode) => {
