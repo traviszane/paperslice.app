@@ -12,7 +12,7 @@ const STEPS: { n: Step; label: string }[] = [
 ];
 
 export function Topbar() {
-  const { step, setStep, theme, toggleTheme, photos, videos, audios, words } = useZine();
+  const { step, setStep, theme, toggleTheme, photos, videos, audios, words, generated } = useZine();
   const { user, profile, signOut } = useAuth();
 
   const wordCount = words.trim() ? 1 : 0;
@@ -24,6 +24,24 @@ export function Topbar() {
   ]
     .filter(Boolean)
     .join(" · ");
+
+  // Step gating: can only advance once prior step is satisfied.
+  // Going BACK to any unlocked step is always allowed — data is preserved in the store.
+  const hasUpload = photos.length + videos.length + audios.length > 0 || words.trim().length > 0;
+  const canAccess = (s: Step): boolean => {
+    if (s === 1) return true;
+    if (s === 2) return hasUpload;          // need at least one upload to format
+    if (s === 3) return hasUpload;          // format has defaults, so unlocks with upload
+    if (s === 4) return hasUpload && generated; // must have generated a zine to export
+    return false;
+  };
+  const lockedReason = (s: Step): string | undefined => {
+    if (canAccess(s)) return undefined;
+    if (s === 2 || s === 3) return "Add at least one photo, video, audio clip, or some text first";
+    if (s === 4) return "Generate your zine first";
+    return undefined;
+  };
+  const tryGoto = (s: Step) => { if (canAccess(s)) setStep(s); };
 
   return (
     <header className="border-b border-rule bg-card">
@@ -55,33 +73,44 @@ export function Topbar() {
             {STEPS.map((s, i) => {
               const active = step === s.n;
               const done = step > s.n;
+              const unlocked = canAccess(s.n);
               const stepColors = ["var(--sky)", "var(--sage)", "var(--blush)", "var(--butter)"];
               const dotColor = stepColors[i];
               return (
                 <button
                   key={s.n}
-                  onClick={() => setStep(s.n)}
+                  onClick={() => tryGoto(s.n)}
+                  disabled={!unlocked}
+                  title={lockedReason(s.n)}
                   className={`group flex items-center gap-1.5 px-3.5 py-2 font-mono text-[10px] uppercase tracking-[0.15em] transition ${
                     active
                       ? "bg-[color:var(--clay)] text-[color:var(--cotton)]"
+                      : !unlocked
+                      ? "cursor-not-allowed text-ink-light/40"
                       : done
                       ? "text-[color:var(--accent-red)] hover:bg-paper-deep"
                       : "text-ink-light hover:bg-paper-deep"
                   } ${i > 0 ? "border-l border-rule" : ""}`}
                   aria-current={active ? "step" : undefined}
+                  aria-disabled={!unlocked}
                 >
                   <span
                     className="inline-block h-1.5 w-1.5 rounded-full"
-                    style={{ background: active ? "var(--cotton)" : dotColor }}
+                    style={{
+                      background: active ? "var(--cotton)" : unlocked ? dotColor : "var(--rule)",
+                      opacity: !unlocked && !active ? 0.5 : 1,
+                    }}
                   />
                   <span className="opacity-70">{s.n}</span>
                   <span>·</span>
                   <span>{s.label}</span>
+                  {!unlocked && <span className="ml-0.5 opacity-60">🔒</span>}
                 </button>
               );
             })}
           </div>
         </nav>
+
 
         <div className="flex items-center gap-3">
           <div className="hidden font-mono text-[10px] tracking-[0.05em] text-ink-light xl:block">
