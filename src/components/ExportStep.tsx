@@ -4,11 +4,16 @@ import { Download, Share2, Link as LinkIcon, Check, Sparkles, FileDown } from "l
 import { useZine } from "@/lib/store";
 import { buildZine } from "@/lib/zine";
 import { exportFor, slug } from "@/lib/export";
+import { useAuth } from "@/hooks/use-auth";
+import { PublishDialog } from "./PublishDialog";
 
 export function ExportStep() {
   const { title, format, headerFont, bodyFont, vibe, textShape, igRatio, photos, videos, audios, words, setStep } = useZine();
+  const { user, profile } = useAuth();
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showPublish, setShowPublish] = useState(false);
+  const hasWatermark = !profile || profile.tier === "free";
 
   const doc = buildZine({ title, format, photos, videos, audios, words });
 
@@ -26,7 +31,7 @@ export function ExportStep() {
       await exportFor(
         format,
         doc,
-        { headerFont, bodyFont, vibe, textShape, watermark: true },
+        { headerFont, bodyFont, vibe, textShape, watermark: hasWatermark },
         { igRatio, audios, videos }
       );
       toast.success("Exported! Check your downloads.");
@@ -80,14 +85,20 @@ export function ExportStep() {
           />
 
           <ExportCard
-            onClick={() => toast.message("Sign in to publish", { description: "Pro tier unlocks public URL + embed code" })}
+            onClick={() => setShowPublish(true)}
             icon={<Share2 size={18} />}
-            title="Publish to a public URL"
-            desc="Get a permanent link + embed code at paperslice.app/zines/…"
-            cta="Sign in"
-            locked
+            title={user ? "Publish to a public URL" : "Sign in to publish"}
+            desc={
+              user
+                ? `Get a permanent link + embed code at paperslice.app/zines/…${hasWatermark ? " (with watermark)" : ""}`
+                : "Free tier publishes with a small footer. Maker / Pro remove it."
+            }
+            cta={user ? "Publish" : "Sign in"}
+            locked={!user}
           />
         </div>
+
+        {/* ... keep existing code (upgrade-for-more block) */}
 
         <div className="mt-10 border-t border-rule pt-6">
           <div className="label-xs mb-2 flex items-center gap-2">
