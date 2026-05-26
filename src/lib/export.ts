@@ -112,12 +112,7 @@ async function renderPageCanvas(page: ZinePage, w: number, h: number, opts: Rend
       ctx.save();
       ctx.translate(padX, headY + fontSize);
       ctx.rotate((-6 * Math.PI) / 180);
-      if (opts.textShape === "outlined") {
-        ctx.strokeStyle = "#1A1714";
-        ctx.strokeText(page.heading, 0, -fontSize);
-      } else {
-        ctx.fillText(page.heading, 0, -fontSize);
-      }
+      ctx.fillText(page.heading, 0, -fontSize);
       ctx.restore();
     } else if (opts.textShape === "stacked" && isCover) {
       const words = page.heading.split(/\s+/).slice(0, 4);
