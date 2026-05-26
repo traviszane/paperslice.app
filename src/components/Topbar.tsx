@@ -245,9 +245,11 @@ export function PublishBanner() {
       </div>
 
 
-      <div className="banner-text relative mx-auto flex max-w-[1180px] flex-wrap items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
-        <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--clay)] sm:inline-block" />
-        {message}
+      <div className="relative mx-auto flex max-w-[1180px] items-center justify-center px-6 py-2">
+        <div className="banner-pill flex flex-wrap items-center justify-center gap-3 font-mono text-[10px] tracking-[0.05em]">
+          <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--banner-accent)] sm:inline-block" />
+          {message}
+        </div>
       </div>
     </div>
   );
