@@ -121,9 +121,9 @@ function ZineView() {
     supabase.rpc("bump_zine_view", { _slug: zine.slug }).then(() => {});
   }, [zine.slug]);
 
-  const photos = zine.assets.filter((a) => a.kind === "photo");
-  const videos = zine.assets.filter((a) => a.kind === "video");
-  const audios = zine.assets.filter((a) => a.kind === "audio");
+  const photos = zine.assets.filter((a: ZineAsset) => a.kind === "photo");
+  const videos = zine.assets.filter((a: ZineAsset) => a.kind === "video");
+  const audios = zine.assets.filter((a: ZineAsset) => a.kind === "audio");
   const showWatermark = (zine.profile?.tier ?? "free") === "free";
 
   return (
@@ -180,7 +180,7 @@ function ZineView() {
 
         {photos.length > 0 && (
           <div className="mt-12 space-y-8">
-            {photos.map((p) =>
+            {photos.map((p: ZineAsset) =>
               p.storage_path ? (
                 <figure key={p.id} className="border border-rule bg-card p-2">
                   <img
@@ -197,7 +197,7 @@ function ZineView() {
 
         {videos.length > 0 && (
           <div className="mt-12 space-y-6">
-            {videos.map((v) =>
+            {videos.map((v: ZineAsset) =>
               v.storage_path ? (
                 <video
                   key={v.id}
@@ -214,7 +214,7 @@ function ZineView() {
         {audios.length > 0 && (
           <div className="mt-10 space-y-3 border-t border-rule pt-8">
             <div className="label-xs">Soundtrack</div>
-            {audios.map((a) =>
+            {audios.map((a: ZineAsset) =>
               a.storage_path ? (
                 <div key={a.id} className="flex items-center gap-3">
                   <div className="font-mono text-[11px] text-ink-mid flex-1 truncate">{a.name}</div>
