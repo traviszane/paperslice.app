@@ -284,7 +284,7 @@ export function UploadStep() {
               </div>
             ))}
             {audios.length < 3 && (
-              <Dropzone onFiles={handleAudios} accept="audio/mpeg,audio/wav,audio/mp3" className="mt-3">
+              <Dropzone onFiles={handleAudios} accept="audio/mpeg,audio/wav,audio/mp3,video/mp4" className="mt-3">
                 <div className="flex items-center gap-2 border border-dashed border-rule px-3 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-light hover:bg-paper-warm">
                   <Plus size={12} /> add audio file
                 </div>
