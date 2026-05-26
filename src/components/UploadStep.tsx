@@ -152,7 +152,14 @@ export function UploadStep() {
 
         {tab === "photos" && (
           <div>
-            <div className="label-xs mb-4">Your photos · drag in jpg, png, webp</div>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="label-xs">Your photos · drag in jpg, png, webp</div>
+              {photos.length > 0 && (
+                <button onClick={clearPhotos} className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-light hover:text-[color:var(--accent-red)]">
+                  clear all
+                </button>
+              )}
+            </div>
             {photos.length === 0 ? (
               <Dropzone
                 onFiles={handlePhotos}
