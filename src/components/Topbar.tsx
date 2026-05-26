@@ -30,14 +30,21 @@ export function Topbar() {
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-6 px-6 py-4 md:px-10">
         <button
           onClick={() => setStep(1)}
-          className="flex items-center leading-none"
+          className="flex items-center leading-none shrink-0"
           aria-label="Paperslice home"
         >
-          <img src={logoFold} alt="paperslice" width={420} height={112} className="h-14 w-auto md:h-16" />
+          <img
+            src={logoFold}
+            alt="paperslice"
+            width={1536}
+            height={1024}
+            className="h-20 w-auto md:h-24 -my-4 object-contain"
+            style={{ maxWidth: "240px" }}
+          />
         </button>
 
         {/* Brand color confetti */}
-        <div className="hidden items-center gap-1 md:flex" aria-hidden>
+        <div className="hidden items-center gap-1 lg:flex" aria-hidden>
           {["var(--clay)","var(--sage)","var(--sky)","var(--blush)","var(--lavender)","var(--butter)"].map((c)=>(
             <span key={c} className="h-2.5 w-2.5 rounded-full" style={{background:`color-mix(in oklab, ${c} 92%, transparent)`}} />
           ))}
