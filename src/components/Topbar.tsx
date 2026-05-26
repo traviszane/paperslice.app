@@ -78,7 +78,7 @@ export function Topbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="hidden font-mono text-[10px] tracking-[0.05em] text-ink-light md:block">
+          <div className="hidden font-mono text-[10px] tracking-[0.05em] text-ink-light xl:block">
             {counts || "0 files"}
           </div>
           <button
