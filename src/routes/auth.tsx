@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import logoFold from "@/assets/logo-fold.png";
+import logoFold from "@/assets/logo-paperslice.png";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
