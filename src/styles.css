@@ -196,3 +196,16 @@
 /* Subtle screen flicker for generate */
 @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
 .flicker { animation: flicker 1.6s ease-in-out infinite; }
+
+/* Publish banner — lighter swatches in light mode, more saturated in dark mode */
+.paperslice-banner { --banner-swatch-strength: 38%; }
+.paperslice-banner .banner-swatch { mix-blend-mode: multiply; box-shadow: 0 1px 0 oklch(0 0 0 / 0.04); }
+.paperslice-banner .banner-wash {
+  background: color-mix(in oklab, var(--cotton) 55%, transparent);
+}
+.dark .paperslice-banner { --banner-swatch-strength: 95%; }
+.dark .paperslice-banner .banner-swatch { mix-blend-mode: screen; box-shadow: none; }
+.dark .paperslice-banner .banner-wash {
+  background: color-mix(in oklab, var(--paper) 25%, transparent);
+}
+
