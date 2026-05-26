@@ -198,25 +198,25 @@ export function PublishBanner() {
 
   const message = user && profile ? (
     <>
-      <span className="text-ink/75">
-        Signed in as <span className="font-medium text-ink">@{profile.username}</span> · {TIER_LABEL[profile.tier]} tier
+      <span>
+        Signed in as <span className="font-semibold">@{profile.username}</span> · {TIER_LABEL[profile.tier]} tier
       </span>
       <Link
         to="/u/$username"
         params={{ username: profile.username }}
-        className="font-medium uppercase tracking-[0.12em] text-[color:var(--clay)] hover:underline"
+        className="font-semibold uppercase tracking-[0.12em] text-[color:var(--banner-accent)] hover:underline"
       >
         view your profile →
       </Link>
     </>
   ) : (
     <>
-      <span className="text-ink/75">
+      <span>
         Sign in to publish your zine — get a public link + embed code
       </span>
       <Link
         to="/auth"
-        className="font-medium uppercase tracking-[0.12em] text-[color:var(--clay)] hover:underline"
+        className="font-semibold uppercase tracking-[0.12em] text-[color:var(--banner-accent)] hover:underline"
       >
         create a free account →
       </Link>
@@ -245,9 +245,11 @@ export function PublishBanner() {
       </div>
 
 
-      <div className="banner-text relative mx-auto flex max-w-[1180px] flex-wrap items-center justify-center gap-3 px-6 py-2 font-mono text-[10px] tracking-[0.05em]">
-        <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--clay)] sm:inline-block" />
-        {message}
+      <div className="relative mx-auto flex max-w-[1180px] items-center justify-center px-6 py-2">
+        <div className="banner-pill flex flex-wrap items-center justify-center gap-3 font-mono text-[10px] tracking-[0.05em]">
+          <span className="hidden h-1.5 w-1.5 rounded-full bg-[color:var(--banner-accent)] sm:inline-block" />
+          {message}
+        </div>
       </div>
     </div>
   );
