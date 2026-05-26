@@ -1,7 +1,7 @@
 import { useZine, type Step } from "@/lib/store";
 import { Moon, Sun, LogOut } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import logoFold from "@/assets/logo-handprint.png";
+import logoFold from "@/assets/logo-wordmark.png";
 import { useAuth, TIER_LABEL } from "@/hooks/use-auth";
 
 const STEPS: { n: Step; label: string }[] = [
