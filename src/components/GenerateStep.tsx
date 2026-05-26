@@ -66,7 +66,7 @@ export function GenerateStep() {
         audios: state.audios,
         words: state.words,
         pageCount: state.pageCount,
-        liveMode: state.liveMode,
+        spacingMode: state.spacingMode,
         pageSpacings: state.pageSpacings,
       }),
     // we intentionally lock the initial doc — the editor mutates editedDoc afterwards
@@ -121,7 +121,7 @@ export function GenerateStep() {
           audios: state.audios,
           words: state.words,
           pageCount: state.pageCount,
-          liveMode: state.liveMode,
+          spacingMode: state.spacingMode,
           pageSpacings: state.pageSpacings,
         });
         setEditedDoc(fresh);
@@ -143,6 +143,7 @@ function Preview({ onExport, onRegenerate }: { onExport: () => void; onRegenerat
     editedDoc,
     photos,
     pageSpacings,
+    spacingMode,
     updatePage,
     addPage,
     deletePage,
