@@ -1,4 +1,5 @@
-import { useZine, HEADER_FONTS, BODY_FONTS, type Format, type IGRatio, type TextShape, type Vibe } from "@/lib/store";
+import { Minus, Plus, Shuffle } from "lucide-react";
+import { useZine, HEADER_FONTS, BODY_FONTS, pageCountConfig, type Format, type IGRatio, type TextShape, type Vibe, type SpacingMode } from "@/lib/store";
 
 const FORMATS: { id: Format; name: string; desc: string; badge: string }[] = [
   { id: "single-sheet", name: "Single Sheet", desc: "8-panel · fold + cut one page", badge: "A4 / Letter" },
