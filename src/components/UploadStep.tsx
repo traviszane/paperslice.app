@@ -358,6 +358,14 @@ export function UploadStep() {
           Continue to format →
         </button>
       </aside>
+
+      {trimmerFile && (
+        <VideoTrimmer
+          file={trimmerFile}
+          onCancel={() => setTrimmerFile(null)}
+          onDone={handleTrimmerDone}
+        />
+      )}
     </div>
   );
 }
