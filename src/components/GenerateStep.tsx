@@ -39,12 +39,13 @@ export function GenerateStep() {
       buildZine({
         title: state.title,
         format: state.format,
+        vibe: state.vibe,
         photos: state.photos,
         videos: state.videos,
         audios: state.audios,
         words: state.words,
       }),
-    [state.title, state.format, state.photos, state.videos, state.audios, state.words]
+    [state.title, state.format, state.vibe, state.photos, state.videos, state.audios, state.words]
   );
 
   if (loading) {
