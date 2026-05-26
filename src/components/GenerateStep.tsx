@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useZine } from "@/lib/store";
-import { buildZine, type ZineDoc, type ZinePage } from "@/lib/zine";
+import { buildZine, type ZineDoc } from "@/lib/zine";
 import { ChevronLeft, ChevronRight, Play, Pause, Volume2 } from "lucide-react";
 
 const MESSAGES = [
