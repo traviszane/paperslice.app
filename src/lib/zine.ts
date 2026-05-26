@@ -155,12 +155,16 @@ export function buildZine(args: {
   videos: VideoFile[];
   audios: AudioFile[];
   words: string;
+  pageCount?: number;
+  spacingMode?: "tight" | "balanced" | "full";
+  pageSpacings?: number[] | null;
 }): ZineDoc {
-  const total = pageCountFor(args.format);
+  const total = args.pageCount ?? defaultPageCountFor(args.format);
   const recipe = VIBES[args.vibe ?? "grain"] ?? VIBES.grain;
   const paras = splitParagraphs(args.words);
   const photos = args.photos;
   const photoCount = photos.length;
+  const baseSpacing = SPACING_VALUE[args.spacingMode ?? "balanced"] ?? 0.10;
 
   const interior = Math.max(0, total - 2);
   const slots: PageLayout[] = [];
