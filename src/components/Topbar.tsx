@@ -33,8 +33,15 @@ export function Topbar() {
           className="flex items-center leading-none"
           aria-label="Paperslice home"
         >
-          <img src={logoFold} alt="paperslice" width={210} height={56} className="h-9 w-auto md:h-10" />
+          <img src={logoFold} alt="paperslice" width={420} height={112} className="h-14 w-auto md:h-16" />
         </button>
+
+        {/* Brand color confetti */}
+        <div className="hidden items-center gap-1 md:flex" aria-hidden>
+          {["var(--clay)","var(--sage)","var(--sky)","var(--blush)","var(--lavender)","var(--butter)"].map((c)=>(
+            <span key={c} className="h-2.5 w-2.5 rounded-full" style={{background:`color-mix(in oklab, ${c} 92%, transparent)`}} />
+          ))}
+        </div>
 
         <nav className="hidden items-center gap-1 md:flex">
           <div className="flex items-center overflow-hidden rounded-full border border-rule bg-paper-warm">
