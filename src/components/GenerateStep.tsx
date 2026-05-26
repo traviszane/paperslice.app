@@ -44,8 +44,11 @@ export function GenerateStep() {
         videos: state.videos,
         audios: state.audios,
         words: state.words,
+        pageCount: state.pageCount,
+        spacingMode: state.spacingMode,
+        pageSpacings: state.pageSpacings,
       }),
-    [state.title, state.format, state.vibe, state.photos, state.videos, state.audios, state.words]
+    [state.title, state.format, state.vibe, state.photos, state.videos, state.audios, state.words, state.pageCount, state.spacingMode, state.pageSpacings]
   );
 
   if (loading) {
