@@ -3,16 +3,19 @@ import { toast } from "sonner";
 import { Plus, Play, Trash2, FileText, Music, X } from "lucide-react";
 import { useZine } from "@/lib/store";
 import { Dropzone } from "./Dropzone";
+import { VideoTrimmer } from "./VideoTrimmer";
+import { extractAudioFromVideo } from "@/lib/ffmpeg";
 
 type Tab = "photos" | "video" | "words" | "audio";
 
-const MAX_VIDEO_BYTES = 8 * 1024 * 1024; // 8MB post-compression target
 const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 export function UploadStep() {
   const [tab, setTab] = useState<Tab>("photos");
+  const [trimmerFile, setTrimmerFile] = useState<File | null>(null);
+  const [extracting, setExtracting] = useState(false);
   const {
     title,
     setTitle,
@@ -48,42 +51,60 @@ export function UploadStep() {
   };
 
   const handleVideos = (files: File[]) => {
-    const valid: File[] = [];
-    for (const f of files) {
-      if (!/^video\/(mp4|quicktime|webm)$/.test(f.type)) {
-        toast.warning(`Skipped ${f.name} — mp4/mov/webm only`);
-        continue;
-      }
-      if (f.size > MAX_VIDEO_BYTES) {
-        toast.warning(`${f.name} is over 8MB — trim/compress coming in the next update.`);
-        // Allow for now; FFmpeg.wasm trim+compress is the next pass.
-      }
-      valid.push(f);
+    const f = files[0];
+    if (!f) return;
+    if (!/^video\/(mp4|quicktime|webm)$/.test(f.type)) {
+      toast.warning(`Skipped ${f.name} — mp4/mov/webm only`);
+      return;
     }
-    const remaining = 3 - videos.length;
-    addVideos(
-      valid.slice(0, remaining).map((f) => ({ id: uid(), name: f.name, url: URL.createObjectURL(f), size: f.size }))
-    );
+    if (videos.length >= 3) {
+      toast.warning("Free tier: 3 videos max.");
+      return;
+    }
+    setTrimmerFile(f);
   };
 
-  const handleAudios = (files: File[]) => {
-    const valid: File[] = [];
+  const handleTrimmerDone = (r: { blob: Blob; url: string; duration: number; name: string }) => {
+    addVideos([{ id: uid(), name: r.name, url: r.url, size: r.blob.size, duration: r.duration }]);
+    setTrimmerFile(null);
+  };
+
+  const handleAudios = async (files: File[]) => {
+    const valid: { name: string; blob: Blob }[] = [];
     for (const f of files) {
+      // Accept mp4: extract audio track
+      if (/^video\/mp4$/.test(f.type) || f.name.toLowerCase().endsWith(".mp4")) {
+        if (audios.length + valid.length >= 3) break;
+        try {
+          setExtracting(true);
+          toast.info(`Extracting audio from ${f.name}…`);
+          const audioBlob = await extractAudioFromVideo(f);
+          valid.push({ name: f.name.replace(/\.mp4$/i, ".mp3"), blob: audioBlob });
+        } catch (e) {
+          toast.error(`Couldn't extract audio: ${(e as Error).message}`);
+        } finally {
+          setExtracting(false);
+        }
+        continue;
+      }
       if (!/audio\/(mpeg|mp3|wav|x-wav)/.test(f.type)) {
-        toast.warning(`Skipped ${f.name} — mp3/wav only`);
+        toast.warning(`Skipped ${f.name} — mp3/wav/mp4 only`);
         continue;
       }
       if (f.size > MAX_AUDIO_BYTES) {
         toast.error(`${f.name} exceeds 10MB`);
         continue;
       }
-      valid.push(f);
+      valid.push({ name: f.name, blob: f });
     }
     const remaining = 3 - audios.length;
     addAudios(
-      valid.slice(0, remaining).map((f) => ({ id: uid(), name: f.name, url: URL.createObjectURL(f), size: f.size }))
+      valid.slice(0, remaining).map((v) => ({ id: uid(), name: v.name, url: URL.createObjectURL(v.blob), size: v.blob.size }))
     );
   };
+
+
+
 
   const handleWordsFile = (files: File[]) => {
     const f = files[0];
@@ -263,7 +284,7 @@ export function UploadStep() {
               </div>
             ))}
             {audios.length < 3 && (
-              <Dropzone onFiles={handleAudios} accept="audio/mpeg,audio/wav,audio/mp3" className="mt-3">
+              <Dropzone onFiles={handleAudios} accept="audio/mpeg,audio/wav,audio/mp3,video/mp4" className="mt-3">
                 <div className="flex items-center gap-2 border border-dashed border-rule px-3 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-light hover:bg-paper-warm">
                   <Plus size={12} /> add audio file
                 </div>

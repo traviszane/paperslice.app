@@ -37,6 +37,13 @@
   --color-ink-mid: var(--ink-mid);
   --color-ink-light: var(--ink-light);
   --color-rule: var(--rule);
+  --color-clay: var(--clay);
+  --color-sage: var(--sage);
+  --color-sky: var(--sky);
+  --color-blush: var(--blush);
+  --color-lavender: var(--lavender);
+  --color-butter: var(--butter);
+  --color-cotton: var(--cotton);
   --font-display: 'Instrument Serif', serif;
   --font-mono: 'Work Sans', sans-serif;
   --font-serif: 'Instrument Serif', serif;
@@ -56,6 +63,13 @@
   --rule: oklch(0.82 0.018 75);
   --accent-red: oklch(0.575 0.125 38);   /* #B85C4A muted terracotta */
   --accent-red-soft: oklch(0.70 0.08 38);
+  /* Entireworld-inspired full color story (muted, sun-faded cottons) */
+  --clay:     oklch(0.575 0.125 38);   /* terracotta — same as accent */
+  --sage:     oklch(0.720 0.060 145);  /* dusty sage green */
+  --sky:      oklch(0.745 0.090 235);  /* sun-faded sky blue */
+  --blush:    oklch(0.840 0.055 25);   /* soft pink */
+  --lavender: oklch(0.760 0.055 295);  /* dusty lavender */
+  --butter:   oklch(0.880 0.070 95);   /* warm butter yellow */
 
   --background: var(--paper);
   --foreground: var(--ink);
