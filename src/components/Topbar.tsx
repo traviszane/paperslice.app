@@ -158,19 +158,27 @@ export function Topbar() {
       <div className="flex items-center justify-center gap-1 border-t border-rule bg-paper-warm px-3 py-2 md:hidden">
         {STEPS.map((s) => {
           const active = step === s.n;
+          const unlocked = canAccess(s.n);
           return (
             <button
               key={s.n}
-              onClick={() => setStep(s.n)}
+              onClick={() => tryGoto(s.n)}
+              disabled={!unlocked}
+              title={lockedReason(s.n)}
               className={`flex-1 rounded-full px-2 py-1.5 font-mono text-[9px] uppercase tracking-[0.12em] ${
-                active ? "bg-[color:var(--clay)] text-[color:var(--cotton)]" : "text-ink-light"
+                active
+                  ? "bg-[color:var(--clay)] text-[color:var(--cotton)]"
+                  : !unlocked
+                  ? "cursor-not-allowed text-ink-light/40"
+                  : "text-ink-light"
               }`}
             >
-              {s.n}·{s.label}
+              {s.n}·{s.label}{!unlocked && !active ? " 🔒" : ""}
             </button>
           );
         })}
       </div>
+
     </header>
   );
 }
