@@ -38,7 +38,7 @@ export function Topbar() {
             alt="paperslice"
             width={1536}
             height={1024}
-            className="h-20 w-auto md:h-24 -my-4 object-contain"
+            className="h-16 w-auto md:h-20 -my-3 object-contain"
             style={{ maxWidth: "240px" }}
           />
         </button>
