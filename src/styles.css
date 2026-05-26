@@ -198,21 +198,32 @@
 .flicker { animation: flicker 1.6s ease-in-out infinite; }
 
 /* Publish banner — stronger colors in light mode, more saturated in dark mode */
-.paperslice-banner { --banner-swatch-strength: 75%; }
+.paperslice-banner {
+  --banner-swatch-strength: 75%;
+  --banner-pill-bg: rgba(28, 23, 18, 0.7);
+  --banner-pill-fg: var(--cotton);
+  --banner-accent: var(--clay);
+}
 .paperslice-banner .banner-swatch { mix-blend-mode: multiply; box-shadow: 0 1px 0 oklch(0 0 0 / 0.04); }
 .paperslice-banner .banner-wash {
   background: color-mix(in oklab, var(--cotton) 18%, transparent);
 }
-.paperslice-banner .banner-text {
-  text-shadow: 0 0 2px var(--cotton), 0 0 4px color-mix(in oklab, var(--cotton) 70%, transparent);
+.paperslice-banner .banner-pill {
+  background: var(--banner-pill-bg);
+  color: var(--banner-pill-fg);
+  border-radius: 99px;
+  padding: 4px 16px;
+  backdrop-filter: blur(2px);
 }
-.dark .paperslice-banner { --banner-swatch-strength: 95%; }
+.dark .paperslice-banner {
+  --banner-swatch-strength: 95%;
+  --banner-pill-bg: rgba(250, 246, 240, 0.78);
+  --banner-pill-fg: oklch(0.18 0.02 250);
+  --banner-accent: oklch(0.48 0.13 250);
+}
 .dark .paperslice-banner .banner-swatch { mix-blend-mode: screen; box-shadow: none; }
 .dark .paperslice-banner .banner-wash {
   background: color-mix(in oklab, var(--paper) 25%, transparent);
-}
-.dark .paperslice-banner .banner-text {
-  text-shadow: 0 0 2px oklch(0 0 0 / 0.55), 0 0 4px oklch(0 0 0 / 0.35);
 }
 
 
