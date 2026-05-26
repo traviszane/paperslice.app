@@ -53,7 +53,7 @@ function AuthPage() {
     <div className="grain min-h-screen bg-paper text-ink">
       <div className="mx-auto flex min-h-screen max-w-[440px] flex-col justify-center px-6 py-12">
         <Link to="/" className="mb-10 flex items-center" aria-label="Paperslice home">
-          <img src={logoFold} alt="paperslice" className="h-10 w-auto" />
+          <img src={logoFold} alt="paperslice" className="h-16 w-auto md:h-20" />
         </Link>
 
         <h1 className="font-display text-4xl tracking-tight md:text-5xl">
